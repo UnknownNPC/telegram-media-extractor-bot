@@ -4,7 +4,7 @@
 
 Telegram Media Extractor Bot is a Scala 3 project designed to download media from external platforms (currently Twitter) and post it to a specified Telegram group. The bot uses Selenium for downloading media files and interacts with Telegram's API to upload and share these files.
 
-While the codebase currently contains some code smells, the focus has been on ensuring functionality, with plans to refine and improve the implementation in the future.
+__While the codebase currently contains significant code smells, the focus has been on ensuring functionality, with plans to refine and improve the implementation in the future.__
 
 ## Usage
 
@@ -50,8 +50,8 @@ To run the bot, the following environment variables must be set:
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone git@github.com:UnknownNPC/telegram-media-extractor-bot.git
+   cd telegram-media-extractor-bot
    ```
 2. Set the required environment variables in your shell or `.env` file.
 3. Build the project using your preferred Scala build tool (e.g., sbt):
