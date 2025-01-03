@@ -1,0 +1,20 @@
+version: '3.6'
+
+services:
+  telegram-media-extractor-bot:
+    image: hseeberger/scala-sbt:11.0.13_1.6.2_3.1.1
+    container_name: telegram_media_extractor_bot
+    environment:
+      - TELEGRAM_BOT_API_KEY=${TELEGRAM_BOT_API_KEY}
+      - TELEGRAM_VALID_USERS=${TELEGRAM_VALID_USERS}
+      - TELEGRAM_TARGET_CHAT_ID=${TELEGRAM_TARGET_CHAT_ID}
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: >
+      /bin/bash -c "echo 'Installing chrome-browser' && 
+      wget -qO - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - &&
+      echo 'deb http://dl.google.com/linux/chrome/deb/ stable main' > /etc/apt/sources.list.d/google-chrome.list &&
+      apt-get update && apt-get install -y google-chrome-stable &&
+      echo 'Running the scala project in watch mode' && 
+      sbt run"
