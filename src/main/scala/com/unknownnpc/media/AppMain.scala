@@ -1,5 +1,6 @@
 package com.unknownnpc.media
 
+import com.pengrad.telegrambot.request.SendMessage
 import com.pengrad.telegrambot.{TelegramBot, UpdatesListener}
 import com.typesafe.scalalogging.StrictLogging
 import com.unknownnpc.media.extractor.{CustomCookie, ExtractorService}
@@ -29,8 +30,15 @@ object AppMain extends StrictLogging:
         Option(update.message) match
           case Some(message) if TelegramValidUserNames.contains(message.from().username()) =>
             logger.info(s"Got the following message: ${message.text()} from the verified user. Processing...")
-            val response = processingService.publishMedia(message.text())
-            logger.info(s"Message processing has been done: $response")
+            val response: Either[Throwable, Unit] = processingService.publishMedia(message.text())
+            response match {
+              case Right(_) =>
+                logger.info(s"Message processing has been done successfully: $response")
+                TelegramBot.execute(new SendMessage(message.chat().id(), "✅ Your message has been processed successfully."))
+              case Left(error) =>
+                logger.error(s"Error processing message: ${message.text()} - $error")
+                TelegramBot.execute(new SendMessage(message.chat().id(), s"❌ Failed to process your message: ${message.text()}."))
+            }
           case Some(message) =>
             logger.warn(s"Got the following message: ${message.text()} from unknown user: ${message.from().username()}")
           case None => logger.error(s"Message body is empty: ${update.updateId()}")
