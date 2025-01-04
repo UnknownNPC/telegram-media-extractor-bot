@@ -4,12 +4,10 @@ import com.pengrad.telegrambot.{TelegramBot, UpdatesListener}
 import com.typesafe.scalalogging.StrictLogging
 import com.unknownnpc.media.extractor.ExtractorService
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Promise}
 import scala.jdk.CollectionConverters.*
 
 
-object AppMain extends StrictLogging:
+object AppMain extends App with StrictLogging:
 
   private val TelegramBotApiKey = sys.env.getOrElse("TELEGRAM_BOT_API_KEY", throw new RuntimeException("Please set TELEGRAM_BOT_API_KEY env var"))
   private val TargetChatId = sys.env.getOrElse("TELEGRAM_TARGET_CHAT_ID", throw new RuntimeException("Please set TELEGRAM_TARGET_CHAT_ID env var")).toLong
@@ -23,19 +21,16 @@ object AppMain extends StrictLogging:
     ExtractorService()
   )
 
-  @main
-  def main(): Unit =
-    logger.info("App has been started")
-    TelegramBot.setUpdatesListener(updates =>
-      for (update <- updates.asScala)
-        Option(update.message) match
-          case Some(message) if TelegramValidUserNames.contains(message.from().username()) =>
-            logger.info(s"Got the following message: ${message.text()} from the verified user. Processing...")
-            val response = processingService.publishMedia(message.text())
-            logger.info(s"Message processing has been done: $response")
-          case Some(message) =>
-            logger.warn(s"Got the following message: ${message.text()} from unknown user: ${message.from().username()}")
-          case None => logger.error(s"Message body is empty: ${update.updateId()}")
-      UpdatesListener.CONFIRMED_UPDATES_ALL
-    )
-    Await.result(Promise[Unit]().future, Duration.Inf)
+  logger.info("App has been started")
+  TelegramBot.setUpdatesListener(updates =>
+    for (update <- updates.asScala)
+      Option(update.message) match
+        case Some(message) if TelegramValidUserNames.contains(message.from().username()) =>
+          logger.info(s"Got the following message: ${message.text()} from the verified user. Processing...")
+          val response = processingService.publishMedia(message.text())
+          logger.info(s"Message processing has been done: $response")
+        case Some(message) =>
+          logger.warn(s"Got the following message: ${message.text()} from unknown user: ${message.from().username()}")
+        case None => logger.error(s"Message body is empty: ${update.updateId()}")
+    UpdatesListener.CONFIRMED_UPDATES_ALL
+  )
