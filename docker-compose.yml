@@ -2,14 +2,17 @@ version: '3.6'
 
 services:
   telegram-media-extractor-bot:
+    shm_size: '512mb'
     image: hseeberger/scala-sbt:11.0.13_1.6.2_3.1.1
     container_name: telegram_media_extractor_bot
     environment:
       - TELEGRAM_BOT_API_KEY=${TELEGRAM_BOT_API_KEY}
       - TELEGRAM_VALID_USERS=${TELEGRAM_VALID_USERS}
       - TELEGRAM_TARGET_CHAT_ID=${TELEGRAM_TARGET_CHAT_ID}
+      - SBT_OPTS=-Xmx512m -Xms256m -XX:MaxMetaspaceSize=256m
     volumes:
       - .:/app
+      - ~/.m2:/root/.m2
     working_dir: /app
     command: >
       /bin/bash -c "echo 'Installing chrome-browser' && 

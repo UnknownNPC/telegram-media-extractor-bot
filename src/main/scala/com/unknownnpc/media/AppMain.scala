@@ -25,6 +25,7 @@ object AppMain extends StrictLogging:
 
   @main
   def main(): Unit =
+    logger.info("App has been started")
     TelegramBot.setUpdatesListener(updates =>
       for (update <- updates.asScala)
         Option(update.message) match
@@ -34,7 +35,7 @@ object AppMain extends StrictLogging:
             logger.info(s"Message processing has been done: $response")
           case Some(message) =>
             logger.warn(s"Got the following message: ${message.text()} from unknown user: ${message.from().username()}")
-          case None => logger.error("Message body is empty")
+          case None => logger.error(s"Message body is empty: ${update.updateId()}")
       UpdatesListener.CONFIRMED_UPDATES_ALL
     )
     Await.result(Promise[Unit]().future, Duration.Inf)
