@@ -1,7 +1,6 @@
 package com.unknownnpc.media.extractor
 
 import com.typesafe.scalalogging.StrictLogging
-import com.unknownnpc.media.extractor.ExtractorService.CustomCookie
 import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.openqa.selenium.{By, Cookie, WebDriver, WebElement}

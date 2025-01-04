@@ -6,8 +6,6 @@ import java.net.URL
 
 object ExtractorService:
 
-  case class CustomCookie(key: String, value: String)
-
   def apply(customCookies: Seq[CustomCookie]): ExtractorService =
     val imageInCenterExtractor = new SeleniumImageInCenterExtractor(customCookies)
     val videoInCenterExtractor = new SeleniumVideoInCenterExtractor(customCookies)
