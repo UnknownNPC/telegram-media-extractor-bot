@@ -3,6 +3,7 @@ package com.unknownnpc.media
 import com.pengrad.telegrambot.{TelegramBot, UpdatesListener}
 import com.typesafe.scalalogging.StrictLogging
 import com.unknownnpc.media.extractor.ExtractorService
+import com.unknownnpc.media.extractor.ExtractorService.CustomCookie
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Promise}
@@ -13,13 +14,18 @@ object AppMain extends StrictLogging:
   private val TelegramBotApiKey = sys.env.getOrElse("TELEGRAM_BOT_API_KEY", throw new RuntimeException("Please set TELEGRAM_BOT_API_KEY env var"))
   private val TargetChatId = sys.env.getOrElse("TELEGRAM_TARGET_CHAT_ID", throw new RuntimeException("Please set TELEGRAM_TARGET_CHAT_ID env var")).toLong
   private val TelegramValidUserNames = sys.env.getOrElse("TELEGRAM_VALID_USERS", throw new RuntimeException("Please set TELEGRAM_VALID_USERS env var")).split(",")
+  private val WebClientCookiesRawPair: Array[String] = sys.env.get("WEB_CLIENT_COOKIES").map(_.split(";")).getOrElse(Array.empty)
+  private val WebClientCookies = WebClientCookiesRawPair.map(cookiePair => cookiePair.split(":") match
+    case Array(key, value) => CustomCookie(key, value)
+    case _ => throw new RuntimeException(s"Invalid key:par format: $cookiePair")
+  )
 
   private val TelegramBot = new TelegramBot(TelegramBotApiKey)
 
   private val processingService = new ProcessingServiceImpl(
     TargetChatId,
     TelegramBot,
-    ExtractorService()
+    ExtractorService(WebClientCookies)
   )
 
   def main(args: Array[String]): Unit =

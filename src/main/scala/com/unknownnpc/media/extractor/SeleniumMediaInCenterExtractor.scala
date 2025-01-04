@@ -1,9 +1,10 @@
 package com.unknownnpc.media.extractor
 
 import com.typesafe.scalalogging.StrictLogging
+import com.unknownnpc.media.extractor.ExtractorService.CustomCookie
 import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
-import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
-import org.openqa.selenium.{By, WebDriver, WebElement}
+import org.openqa.selenium.support.ui.WebDriverWait
+import org.openqa.selenium.{By, Cookie, WebDriver, WebElement}
 
 import java.net.URL
 import java.time.Duration
@@ -34,11 +35,18 @@ private[extractor] trait SeleniumMediaInCenterExtractor extends Extractor with S
 
   def extension: Extension
 
+  def customCookies: Seq[CustomCookie]
+
   override def extract(url: URL): Result =
 
     val tryMedia = Try:
       driver.get(url.toString)
-      driverWait.until(ExpectedConditions.presenceOfElementLocated(By.tagName(tagForSearch)))
+      customCookies.foreach(customCookie =>
+        val seleniumCustomCookie = new Cookie(customCookie.key, customCookie.value)
+        driver.manage().addCookie(seleniumCustomCookie)
+      )
+      driver.navigate().refresh()
+      Thread.sleep(15_000) // Otherwise, all these async images are not available
       driver.findElements(By.tagName(tagForSearch)).asScala.toList
 
     tryMedia match

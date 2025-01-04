@@ -5,15 +5,18 @@ import com.typesafe.scalalogging.StrictLogging
 import java.net.URL
 
 object ExtractorService:
-  def apply(imageExtractor: Extractor = new SeleniumImageInCenterExtractor,
-            videoExtractor: Extractor = new SeleniumVideoInCenterExtractor) =
-    new ExtractorService(imageExtractor, videoExtractor)
+
+  case class CustomCookie(key: String, value: String)
+
+  def apply(customCookies: Seq[CustomCookie]): ExtractorService =
+    val imageInCenterExtractor = new SeleniumImageInCenterExtractor(customCookies)
+    val videoInCenterExtractor = new SeleniumVideoInCenterExtractor(customCookies)
+    new ExtractorService(imageInCenterExtractor, videoInCenterExtractor)
 
 class ExtractorService(imageExtractor: Extractor, videoExtractor: Extractor) extends StrictLogging:
   def getMediaUrl(pageUrl: String): Option[ExtractorPayload] =
     pageUrl.trim match
       case _ if pageUrl.startsWith("http") =>
-        val imageInCenterExtractor = new SeleniumImageInCenterExtractor
 
         val url = new URL(pageUrl)
 
