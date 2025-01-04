@@ -22,7 +22,7 @@ __While the codebase currently contains significant code smells, the focus has b
     - GIFs (stored as MP4 in both Twitter and Telegram)
 - **Platform Integration:** Twitter (media URLs are provided to the bot)
 
-__Please check tests to understand what type of URLs work at current moment__
+__Please check tests to understand what type of URLs work at the current moment__
 
 ### Planned Improvements:
 
@@ -45,6 +45,7 @@ To run the bot, the following environment variables must be set:
 | `TELEGRAM_BOT_API_KEY`    | The API key for your Telegram bot.                                                          |
 | `TELEGRAM_VALID_USERS`    | A comma-separated list of user IDs allowed to interact with the bot.                        |
 | `TELEGRAM_TARGET_CHAT_ID` | The chat ID of the Telegram group where media will be posted.                               |
+| `WEB_CLIENT_COOKIES`      | Optional cookies in the format `key:value;key1:value1`, used for passing authorization tokens. |
 
 ### Installation:
 
@@ -74,6 +75,7 @@ sbt run
    TELEGRAM_BOT_API_KEY=your_bot_api_key
    TELEGRAM_VALID_USERS=user1,user2
    TELEGRAM_TARGET_CHAT_ID=your_chat_id
+   WEB_CLIENT_COOKIES="key:value;key1:value1"
    ```
 
 2. Start the bot using Docker Compose:
