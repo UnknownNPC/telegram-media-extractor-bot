@@ -2,11 +2,9 @@ package com.unknownnpc.media.extractor
 
 import com.typesafe.scalalogging.StrictLogging
 import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
-import org.openqa.selenium.support.ui.WebDriverWait
 import org.openqa.selenium.{By, Cookie, WebDriver, WebElement}
 
 import java.net.URL
-import java.time.Duration
 import scala.jdk.CollectionConverters.*
 import scala.util.{Failure, Success, Try}
 
@@ -28,7 +26,6 @@ private[extractor] trait SeleniumMediaInCenterExtractor extends Extractor with S
     addArguments(s"--window-size=$ScreenWidth,$ScreenHeight")
   }
   private val driver: WebDriver = new ChromeDriver(options)
-  private val driverWait = new WebDriverWait(driver, Duration.ofSeconds(30))
 
   def tagForSearch: String
 
@@ -45,7 +42,7 @@ private[extractor] trait SeleniumMediaInCenterExtractor extends Extractor with S
         driver.manage().addCookie(seleniumCustomCookie)
       )
       driver.navigate().refresh()
-      Thread.sleep(15_000) // Otherwise, all these async images are not available
+      Thread.sleep(60_000) // Otherwise, all these async images are not ready
       driver.findElements(By.tagName(tagForSearch)).asScala.toList
 
     tryMedia match
