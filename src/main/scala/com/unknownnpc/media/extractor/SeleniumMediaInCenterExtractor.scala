@@ -21,7 +21,6 @@ private[extractor] trait SeleniumMediaInCenterExtractor extends Extractor with S
 
   private val options = new ChromeOptions() {
     addArguments("--headless")
-    addArguments("--no-sandbox")
     addArguments("--disable-gpu")
     addArguments(s"--window-size=$ScreenWidth,$ScreenHeight")
   }
