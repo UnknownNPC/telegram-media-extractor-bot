@@ -19,7 +19,7 @@ class ProcessingServiceImpl(chatId: Long, bot: TelegramBot, extractorService: Ex
 
   override def publishMedia(message: String): Either[Throwable, Unit] = {
     for {
-      extractorPayload <- extractorService.getMediaUrl(message).toRight(throw new RuntimeException("Cannot get media url"))
+      extractorPayload <- extractorService.getMediaUrl(message).toRight(new RuntimeException("Cannot get media url"))
       localFile <- downloadToTempFile(extractorPayload)
       _ =
         extractorPayload.extension match
