@@ -36,6 +36,7 @@ private[extractor] trait SeleniumMediaInCenterExtractor extends Extractor with S
   override def extract(url: URL): Result =
 
     val tryMedia = Try:
+      driver.get("about:blank")
       driver.get(url.toString)
       customCookies.foreach(customCookie =>
         val seleniumCustomCookie = new Cookie(customCookie.key, customCookie.value)
@@ -92,4 +93,5 @@ private[extractor] trait SeleniumMediaInCenterExtractor extends Extractor with S
             }
             .map(strSrcUrl => ExtractorPayload(new URL(strSrcUrl), extension))
 
+          driver.quit()
           Right(maybeUrl)
