@@ -3,7 +3,8 @@ package com.unknownnpc.media
 import com.pengrad.telegrambot.request.SendMessage
 import com.pengrad.telegrambot.{TelegramBot, UpdatesListener}
 import com.typesafe.scalalogging.StrictLogging
-import com.unknownnpc.media.extractor.{CustomCookie, ExtractorService}
+import com.unknownnpc.media.extractor.ExtractorService
+import com.unknownnpc.media.extractor.model.CustomCookie
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Promise}

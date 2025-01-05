@@ -3,8 +3,9 @@ package com.unknownnpc.media
 import com.pengrad.telegrambot.TelegramBot
 import com.pengrad.telegrambot.request.{SendPhoto, SendVideo}
 import com.typesafe.scalalogging.StrictLogging
-import com.unknownnpc.media.extractor.Extension.{JPEG, MP4}
-import com.unknownnpc.media.extractor.{ExtractorPayload, ExtractorService}
+import com.unknownnpc.media.extractor.ExtractorService
+import com.unknownnpc.media.extractor.model.Extension.*
+import com.unknownnpc.media.extractor.model.ExtractorPayload
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.impl.classic.{CloseableHttpClient, HttpClients}
 
@@ -37,7 +38,7 @@ class ProcessingServiceImpl(chatId: Long, bot: TelegramBot, extractorService: Ex
       val client: CloseableHttpClient = HttpClients.createDefault()
 
       Using.resource(client) { httpClient =>
-        val request = new HttpGet(extractorPayload.url.toURI)
+        val request = new HttpGet(extractorPayload.urls.head.toURI) //TODO update for video
         httpClient.execute(request, response => {
           val entity = response.getEntity
           Using.resource(entity.getContent) { inputStream =>

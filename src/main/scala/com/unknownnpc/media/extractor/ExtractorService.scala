@@ -1,6 +1,7 @@
 package com.unknownnpc.media.extractor
 
 import com.typesafe.scalalogging.StrictLogging
+import com.unknownnpc.media.extractor.model.{CustomCookie, ExtractorPayload}
 
 import java.net.URL
 
@@ -8,7 +9,7 @@ object ExtractorService:
 
   def apply(customCookies: Seq[CustomCookie]): ExtractorService =
     val imageInCenterExtractor = new SeleniumImageInCenterExtractor(customCookies)
-    val videoInCenterExtractor = new SeleniumVideoInCenterExtractor(customCookies)
+    val videoInCenterExtractor = new SeleniumFirstVideoExtractor(customCookies)
     new ExtractorService(imageInCenterExtractor, videoInCenterExtractor)
 
 class ExtractorService(imageExtractor: Extractor, videoExtractor: Extractor) extends StrictLogging:

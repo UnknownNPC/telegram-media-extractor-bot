@@ -1,6 +1,7 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "3.6.2"
+ThisBuild / concurrentRestrictions := Tags.limit(Tags.Test, 1) :: Nil
 
 lazy val root = (project in file("."))
   .settings(
