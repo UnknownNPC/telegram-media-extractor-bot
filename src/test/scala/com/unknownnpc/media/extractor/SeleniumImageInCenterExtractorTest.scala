@@ -16,6 +16,21 @@ class SeleniumImageInCenterExtractorTest extends AnyFunSuite with Matchers:
     assert(payload.url.toString == "https://pbs.twimg.com/media/GgTF8MBXIAAyMPs?format=jpg&name=small")
     assert(payload.extension == Extension.JPEG)
 
+  test("SeleniumImageInCenterExtractor extracts two images in parallel"):
+    val extractor = new SeleniumImageInCenterExtractor(Seq.empty)
+    val resultOne = extractor.extract(new URL("https://x.com/m13tfz08k/status/1874840987992027161"))
+    val resultTwo = extractor.extract(new URL("https://x.com/frenchieclub247/status/1875542922982256887"))
+
+    assert(resultOne.isRight)
+    assert(resultTwo.isRight)
+
+    val payloadOne = resultOne.getOrElse(throw new RuntimeException("Boom")).get
+    assert(payloadOne.url.toString == "https://pbs.twimg.com/media/GgTF8MBXIAAyMPs?format=jpg&name=small")
+    assert(payloadOne.extension == Extension.JPEG)
+
+    val payloadTwo = resultTwo.getOrElse(throw new RuntimeException("Boom")).get
+    assert(payloadTwo.url.toString == "https://pbs.twimg.com/media/GgdEWWHa0AA0si2?format=jpg&name=small")
+    assert(payloadTwo.extension == Extension.JPEG)
 
   test("SeleniumImageInCenterExtractor extracts image from OF"):
     val extractor = new SeleniumImageInCenterExtractor(Seq.empty)
