@@ -1,8 +1,8 @@
 package com.unknownnpc.media.extractor
 
 import com.typesafe.scalalogging.StrictLogging
-import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
 import org.openqa.selenium.*
+import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
 
 import java.net.URL
 import scala.jdk.CollectionConverters.*
@@ -42,7 +42,7 @@ private[extractor] trait SeleniumMediaInCenterExtractor extends Extractor with S
         driver.manage().addCookie(seleniumCustomCookie)
       )
       driver.navigate().refresh()
-      Thread.sleep(15_000) // TODO: Refactor. Otherwise, all these async images are not ready
+      Thread.sleep(60_000) // TODO: Refactor. Otherwise, all these async images are not ready
       driver.findElements(By.tagName(tagForSearch)).asScala.toList
 
     tryMedia match
@@ -67,12 +67,11 @@ private[extractor] trait SeleniumMediaInCenterExtractor extends Extractor with S
           isInViewport
         }
 
-        logger.info(s"Found in the viewport: \n${visibleInViewport.mkString("\n")}")
-
         if visibleInViewport.isEmpty then
           logger.info(s"No media found for $tagForSearch")
           Right(None)
         else
+          logger.info(s"Found in the viewport: \n${visibleInViewport.map(_.getDomAttribute("src")).mkString("\n")}")
           val screenCenterX = ScreenWidth / 2
           val screenCenterY = ScreenHeight / 2
 
@@ -83,7 +82,7 @@ private[extractor] trait SeleniumMediaInCenterExtractor extends Extractor with S
             Math.sqrt(Math.pow(imgCenterX - screenCenterX, 2) + Math.pow(imgCenterY - screenCenterY, 2))
           }
 
-          logger.info(s"Found the following closest media: [${nearestMedia.getDomAttribute("src")}]")
+          logger.info(s"The next media is in the center: [${nearestMedia.getDomAttribute("src")}]")
 
           val maybeUrl = Option(nearestMedia.getDomAttribute("src"))
             .map {
