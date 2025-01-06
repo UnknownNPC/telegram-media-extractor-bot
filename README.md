@@ -4,7 +4,7 @@
 
 Telegram Media Extractor Bot is a Scala 3 project designed to download media from external platforms (currently Twitter) and post it to a specified Telegram group. The bot uses Selenium for downloading media files and interacts with Telegram's API to upload and share these files.
 
-__While the codebase currently contains significant code smells, the focus has been on ensuring functionality, with plans to refine and improve the implementation in the future.__
+__This project does not aim to provide stability or production-grade reliability. It is primarily intended as a convenience tool for reposting media.__
 
 ## Usage
 
@@ -13,6 +13,7 @@ __While the codebase currently contains significant code smells, the focus has b
 3. If valid, the bot uses Selenium to download the media. Supported scenarios include:
     - JPEG images
     - MP4 files (GIFs from Twitter are natively stored as MP4 and posted as-is to Telegram).
+    - Videos (including MP4 format)
 4. The downloaded media is uploaded to the Telegram group specified by `TELEGRAM_TARGET_CHAT_ID`.
 
 ### Current Features:
@@ -20,13 +21,16 @@ __While the codebase currently contains significant code smells, the focus has b
 - **Supported Media Types:**
     - JPEG images
     - GIFs (stored as MP4 in both Twitter and Telegram)
+    - Videos (MP4)
 - **Platform Integration:** Twitter (media URLs are provided to the bot)
 
-__Please check tests to understand what type of URLs work at the current moment__
+__The bot may also work with videos and images from Instagram, but this functionality is experimental and requires further testing.__  
+__Important: Links to the middle of a thread or complex URLs may fail. For higher reliability, use direct links to single posts with media.__  
+__Please check tests to understand what type of URLs work at the current moment. Testing has primarily been conducted using Twitter media links.__
 
 ### Planned Improvements:
 
-- Support for video downloads
+- Expanding platform support beyond Twitter and Instagram
 
 ## Getting Started
 
@@ -101,9 +105,9 @@ sbt run
 ## Limitations:
 
 - **Media Support:**
-    - Currently supports JPEG images and MP4 files (originating as GIFs from Twitter).
-    - Videos are not yet handled.
-- **Dependency on Twitter URLs:** Only works with Twitter media links at the moment.
+    - Currently supports JPEG images, MP4 files (originating as GIFs from Twitter), and videos.
+    - Experimental support for Instagram media (videos and images) — functionality may be unstable and requires testing.
+- **URL Complexity:** Links to threads or specific parts of conversations may fail. Use simple URLs pointing to single posts for better results.
 
 ## Contributing:
 
@@ -114,3 +118,5 @@ sbt run
 ---
 
 For issues or feature requests, please create a ticket in the issue tracker.
+
+---

@@ -5,16 +5,26 @@ import com.unknownnpc.media.extractor.ExtractorChromeDriver.{*, given}
 import com.unknownnpc.media.extractor.model.{CustomCookie, ExtractorException, ExtractorPayload, Result}
 import org.openqa.selenium.Cookie
 import org.openqa.selenium.chrome.ChromeDriver as SeleniumChromeDriver
+import org.slf4j.bridge.SLF4JBridgeHandler
 
 import java.net.URL
 import scala.util.{Failure, Success, Try, Using}
 
+object SeleniumWebDriverLike:
+  val DefaultPageAwaitMs = 60_000
+
 trait SeleniumWebDriverLike extends StrictLogging:
-  def openPage(url: URL, customCookies: Seq[CustomCookie], sleepTimeout: Long)
-              (fn: SeleniumChromeDriver => Option[ExtractorPayload], preConfigureFn: SeleniumChromeDriver => Unit = _ => ()): Result =
+
+  SLF4JBridgeHandler.removeHandlersForRootLogger()
+  SLF4JBridgeHandler.install()
+
+  def openPage[CONTEXT](url: URL, customCookies: Seq[CustomCookie], sleepTimeout: Long)
+                       (mainFn: (SeleniumChromeDriver, CONTEXT) => Option[ExtractorPayload],
+                        preConfigureFn: SeleniumChromeDriver => CONTEXT = _ => ()
+                       ): Result =
     val tryRunResult: Try[Option[ExtractorPayload]] = Using(ExtractorChromeDriver.getInstance()): driver =>
 
-      preConfigureFn(driver)
+      val context = preConfigureFn(driver)
 
       driver.get("about:blank")
       driver.get(url.toString)
@@ -28,7 +38,7 @@ trait SeleniumWebDriverLike extends StrictLogging:
 
       Thread.sleep(sleepTimeout)
 
-      fn(driver)
+      mainFn(driver, context)
 
     tryRunResult match
       case Success(result) => Right(result)

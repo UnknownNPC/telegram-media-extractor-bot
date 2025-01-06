@@ -42,7 +42,7 @@ class SeleniumImageInCenterExtractorTest extends AnyFunSuite with Matchers:
 
   test("SeleniumImageInCenterExtractor extracts image from OF shop"):
     val extractor = new SeleniumImageInCenterExtractor(Seq.empty)
-    
+
     val result = extractor.extract(new URL("https://store.onlyfans.com/cdn/shop/files/ONLYFANSOct2-Square-3057.jpg?v=170"))
 
     assert(result.isRight)
@@ -50,7 +50,7 @@ class SeleniumImageInCenterExtractorTest extends AnyFunSuite with Matchers:
     assert(payload.urls.head.toString == "https://store.onlyfans.com/cdn/shop/files/ONLYFANSOct2-Square-3057.jpg?v=170")
     assert(payload.extension == Extension.JPEG)
 
-  test("SeleniumVideoInCenterExtractor extracts image from twitter when credentials are set"):
+  test("SeleniumImageInCenterExtractor extracts image from twitter when credentials are set"):
     val cookies = sys.env.get("TWITTER_CUSTOM_COOKIES").map(CustomCookie.from).getOrElse(Seq.empty)
 
     if cookies.nonEmpty then

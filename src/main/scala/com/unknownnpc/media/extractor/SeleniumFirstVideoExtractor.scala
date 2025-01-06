@@ -1,5 +1,6 @@
 package com.unknownnpc.media.extractor
 
+import com.unknownnpc.media.extractor.SeleniumWebDriverLike.DefaultPageAwaitMs
 import com.unknownnpc.media.extractor.model.{CustomCookie, Extension, ExtractorPayload, Result}
 import org.openqa.selenium.{By, JavascriptExecutor, WebElement}
 
@@ -19,11 +20,11 @@ private[extractor] class SeleniumFirstVideoExtractor(val customCookies: Seq[Cust
         }
         .flatMap(format => Extension.values.find(_.toString.equalsIgnoreCase(format)))
         .getOrElse {
-          logger.warn(s"Unable to get video format from ${media.getDomAttribute("type")}. Using MP4 as default")
+          logger.warn(s"Unable to get video format from ${media.getDomAttribute("src")}. Using MP4 as default")
           Extension.MP4
         }
 
-    openPage(url, customCookies, 60_000): driver =>
+    openPage(url, customCookies, DefaultPageAwaitMs): (driver, _) =>
       val videos = driver.findElements(By.tagName("video")).asScala
 
       val jsExecutor = driver.asInstanceOf[JavascriptExecutor]
@@ -50,7 +51,7 @@ private[extractor] class SeleniumFirstVideoExtractor(val customCookies: Seq[Cust
           val videoType = getVideoExtension(media)
           logger.info(s"The video on page is: [${media.getDomAttribute("src")}], extension: [$videoType]")
           Option(media.getDomAttribute("src"))
-            .map(strSrcUrl => ExtractorPayload(Set(new URL(strSrcUrl)), videoType))
+            .map(strSrcUrl => ExtractorPayload(Seq(new URL(strSrcUrl)), videoType))
         case None =>
           logger.info(s"No media intersects with the center point.")
           None
