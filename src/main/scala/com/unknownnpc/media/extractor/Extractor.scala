@@ -4,6 +4,6 @@ import com.unknownnpc.media.extractor.model.Result
 
 import java.net.URL
 
-trait Extractor:
+trait Extractor[T]:
 
-  def extract(url: URL): Result
+  def extract(url: URL): Result[T]

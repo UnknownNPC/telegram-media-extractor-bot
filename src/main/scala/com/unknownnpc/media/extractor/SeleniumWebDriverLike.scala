@@ -2,7 +2,7 @@ package com.unknownnpc.media.extractor
 
 import com.typesafe.scalalogging.StrictLogging
 import com.unknownnpc.media.extractor.ExtractorChromeDriver.{*, given}
-import com.unknownnpc.media.extractor.model.{CustomCookie, ExtractorException, ExtractorPayload, Result}
+import com.unknownnpc.media.extractor.model.{CustomCookie, ExtractorException, Result}
 import org.openqa.selenium.Cookie
 import org.openqa.selenium.chrome.ChromeDriver as SeleniumChromeDriver
 import org.slf4j.bridge.SLF4JBridgeHandler
@@ -18,11 +18,11 @@ trait SeleniumWebDriverLike extends StrictLogging:
   SLF4JBridgeHandler.removeHandlersForRootLogger()
   SLF4JBridgeHandler.install()
 
-  def openPage[CONTEXT](url: URL, customCookies: Seq[CustomCookie], sleepTimeout: Long)
-                       (mainFn: (SeleniumChromeDriver, CONTEXT) => Option[ExtractorPayload],
-                        preConfigureFn: SeleniumChromeDriver => CONTEXT = _ => ()
-                       ): Result =
-    val tryRunResult: Try[Option[ExtractorPayload]] = Using(ExtractorChromeDriver.getInstance()): driver =>
+  def openPage[CONTEXT, T](url: URL, customCookies: Seq[CustomCookie], sleepTimeout: Long)
+                          (mainFn: (SeleniumChromeDriver, CONTEXT) => T,
+                           preConfigureFn: SeleniumChromeDriver => CONTEXT = _ => ()
+                          ): Result[T] =
+    val tryRunResult: Try[T] = Using(ExtractorChromeDriver.getInstance()): driver =>
 
       val context = preConfigureFn(driver)
 

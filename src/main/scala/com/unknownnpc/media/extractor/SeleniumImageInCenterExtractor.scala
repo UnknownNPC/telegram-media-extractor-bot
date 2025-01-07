@@ -9,9 +9,10 @@ import scala.annotation.tailrec
 import scala.jdk.CollectionConverters.*
 import scala.util.Try
 
-private[extractor] class SeleniumImageInCenterExtractor(val customCookies: Seq[CustomCookie]) extends Extractor with SeleniumWebDriverLike:
+private[extractor] class SeleniumImageInCenterExtractor(val customCookies: Seq[CustomCookie])
+  extends Extractor[Option[ExtractorPayload]] with SeleniumWebDriverLike:
 
-  def extract(url: URL): Result =
+  override def extract(url: URL): Result[Option[ExtractorPayload]] =
     openPage(url, customCookies, DefaultPageAwaitMs) { (driver, _) =>
       val jsExecutor = driver.asInstanceOf[JavascriptExecutor]
       val centralElement = findCentralElement(jsExecutor)

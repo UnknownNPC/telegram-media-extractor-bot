@@ -7,8 +7,10 @@ import org.openqa.selenium.{By, JavascriptExecutor, WebElement}
 import java.net.URL
 import scala.jdk.CollectionConverters.*
 
-private[extractor] class SeleniumFirstVideoExtractor(val customCookies: Seq[CustomCookie]) extends Extractor with SeleniumWebDriverLike:
-  override def extract(url: URL): Result =
+private[extractor] class SeleniumMp4VideoExtractor(val customCookies: Seq[CustomCookie])
+  extends Extractor[Option[ExtractorPayload]] with SeleniumWebDriverLike:
+
+  override def extract(url: URL): Result[Option[ExtractorPayload]] =
 
     def getVideoExtension(media: WebElement): Extension =
       Option(media.getDomAttribute("type"))
