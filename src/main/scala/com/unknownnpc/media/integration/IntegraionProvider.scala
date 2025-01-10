@@ -6,7 +6,7 @@ import com.typesafe.scalalogging.StrictLogging
 trait IntegrationProvider:
   def getIntegrations: Seq[SocialMediaIntegration]
 
-case class DefaultIntegrationProvider(telegramBot: TelegramBot) extends IntegrationProvider with StrictLogging:
+case class DefaultIntegrationProvider() extends IntegrationProvider with StrictLogging:
 
   private val TelegramIntegrationFields =
     for {
@@ -26,8 +26,7 @@ case class DefaultIntegrationProvider(telegramBot: TelegramBot) extends Integrat
     Seq(
       TelegramIntegrationFields.map((botApiKey: String, targetChatId: Long) => {
         logger.info("Telegram integration fields were found. Enabling telegram integration")
-        new TelegramBot(botApiKey)
-        TelegramSocialMedia(targetChatId, telegramBot)
+        TelegramSocialMedia(targetChatId, new TelegramBot(botApiKey))
       }),
       TwitterIntegrationFields.map((apiKey, apiSecret, accessToken, accessTokenSecret) => {
         logger.info("Twitter integration field was found. Enabling twitter integration")

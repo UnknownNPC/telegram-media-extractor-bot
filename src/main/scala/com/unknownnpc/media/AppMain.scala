@@ -19,10 +19,9 @@ object AppMain extends StrictLogging:
 
   private val TelegramBot = new TelegramBot(TelegramBotApiKey)
 
-  private val IntegrationProvider = DefaultIntegrationProvider(TelegramBot)
   private val processingService = new ProcessingServiceImpl(
     ExtractorService(WebClientCookies),
-    IntegrationProvider.getIntegrations
+    DefaultIntegrationProvider().getIntegrations
   )
 
   def main(args: Array[String]): Unit =
