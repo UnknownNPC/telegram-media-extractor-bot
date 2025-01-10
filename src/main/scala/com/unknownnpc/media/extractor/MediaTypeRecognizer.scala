@@ -36,15 +36,16 @@ private[extractor] class SeleniumMediaTypeRecognizer(val customCookies: Seq[Cust
           }
         }.getOrElse(MediaType.Unknown)
 
-    logger.info(s"URL [${source}] has been detected as $mediaType")
+    logger.info(s"URL [$source] has been detected as $mediaType")
     mediaType
   }
 
   private def hasBlobSource(videos: Seq[WebElement]): Boolean =
     videos.exists(video =>
-      video.findElements(By.tagName("source")).asScala.exists(source =>
-        Option(source.getDomAttribute("src")).exists(_.startsWith("blob:"))
-      )
+      Option(video.getDomAttribute("src")).exists(_.startsWith("blob:")) ||
+        video.findElements(By.tagName("source")).asScala.exists(source =>
+          Option(source.getDomAttribute("src")).exists(_.startsWith("blob:"))
+        )
     )
 
   private def hasMp4Source(videos: Seq[WebElement]): Boolean =

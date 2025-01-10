@@ -63,3 +63,17 @@ class SeleniumImageInCenterExtractorTest extends AnyFunSuite with Matchers:
       assert(payload.extension == Extension.JPEG)
     else
       assert(true)
+
+  test("SeleniumImageInCenterExtractor extracts image from instagram when credentials are set"):
+    val cookies = sys.env.get("INSTAGRAM_CUSTOM_COOKIES").map(CustomCookie.from).getOrElse(Seq.empty)
+
+    if cookies.nonEmpty then
+      val extractor = new SeleniumImageInCenterExtractor(cookies)
+
+      val result = extractor.extract(new URL("https://www.instagram.com/p/DB2etpNvvWx/"))
+
+      val payload = result.getOrElse(throw new RuntimeException("Boom")).get
+      assert(payload.urls.head.toString.contains("https://scontent-iev1-1.cdninstagram.com/v/t51.29350-15/465192961_1096741428689465_3898467535582395511_n.jpg"))
+      assert(payload.extension == Extension.JPEG)
+    else
+      assert(true)
