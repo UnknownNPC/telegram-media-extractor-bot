@@ -15,23 +15,23 @@ private[integration] case class TwitterSocialMedia(apiKey: String, apiSecret: St
                                                    accessToken: String, accessTokenSecret: String
                                                   ) extends SocialMediaIntegration with StrictLogging:
 
+  private val TwitterV1Client = TwitterFactory.getSingleton
+  TwitterV1Client.setOAuthConsumer(apiKey, apiSecret)
+  TwitterV1Client.setOAuthAccessToken(new AccessToken(accessToken, accessTokenSecret))
+  private val TwitterV2Client = TwitterV2ExKt.getV2(TwitterV1Client)
+
   override val name: String = TwitterSocialMedia.TwitterName
 
   override def send(filePath: Path, extension: Extension): SenderTask =
     Try {
-      val twitterV1Api = TwitterFactory.getSingleton
-      twitterV1Api.setOAuthConsumer(apiKey, apiSecret)
-      twitterV1Api.setOAuthAccessToken(new AccessToken(accessToken, accessTokenSecret))
 
       val mediaCategory = extension match
         case JPEG => TwitterSocialMedia.TweetImageCategory
         case MP4 | M3U8 => TwitterSocialMedia.TweetVideoCategory
 
-      val mediaId = uploadMedia(twitterV1Api, filePath, mediaCategory).getOrElse(throw RuntimeException("Unable to create media"))
+      val mediaId = uploadMedia(TwitterV1Client, filePath, mediaCategory).getOrElse(throw RuntimeException("Unable to create media"))
 
-      val twitterV2 = TwitterV2ExKt.getV2(twitterV1Api)
-
-      val createTweet = twitterV2.createTweet(null, null, null, Array(mediaId), Array.empty,
+      val createTweet = TwitterV2Client.createTweet(null, null, null, Array(mediaId), Array.empty,
         null, null, null, null, null, null, TwitterSocialMedia.TweetText)
       logger.info(s"Tweet successfully sent with ID: ${createTweet.getId}")
     }.toEither
