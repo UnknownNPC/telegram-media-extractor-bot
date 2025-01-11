@@ -10,6 +10,7 @@ import io.github.redouane59.twitter.signature.TwitterCredentials
 
 import java.nio.file.Path
 import scala.jdk.CollectionConverters.*
+import scala.jdk.OptionConverters.*
 import scala.util.Try
 
 private[integration] case class TwitterSocialMedia(apiKey: String, apiSecret: String,
@@ -32,15 +33,20 @@ private[integration] case class TwitterSocialMedia(apiKey: String, apiSecret: St
         case JPEG => MediaCategory.TWEET_IMAGE
         case MP4 | M3U8 => MediaCategory.TWEET_VIDEO
 
-      val mediaResponseOpt = Option(twitterClient.uploadMedia(filePath.toFile, mediaCategory))
-      val mediaResponse = mediaResponseOpt.getOrElse(throw new RuntimeException("Unable to create/upload media to twitter"))
+      val mediaResponseOpt = mediaCategory match
+        case MediaCategory.TWEET_IMAGE =>
+          Option(twitterClient.uploadMedia(filePath.toFile, mediaCategory)).map(_.getMediaId)
+        case MediaCategory.TWEET_VIDEO =>
+          twitterClient.uploadChunkedMedia(filePath.toFile, mediaCategory).map(_.getMediaId).toScala
+        case _ => throw new RuntimeException("Media category is not supported")
 
-      val mediaRequest = Media.builder().mediaIds(List(mediaResponse.getMediaId).asJava).build()
+      val mediaId = mediaResponseOpt.getOrElse(throw new RuntimeException("Unable to create/upload media to twitter"))
+
+      val mediaRequest = Media.builder().mediaIds(List(mediaId).asJava).build()
       val tweetParameters = TweetParameters.builder()
         .text("#nsfw #nudes #spa")
         .media(mediaRequest)
         .build()
-
 
       val tweetOpt = Option(twitterClient.postTweet(tweetParameters)).flatMap(tweet => Option(tweet.getId))
       val tweetId = tweetOpt.getOrElse(throw new RuntimeException("Failed to post tweet"))
