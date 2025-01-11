@@ -5,7 +5,7 @@ import com.pengrad.telegrambot.{TelegramBot, UpdatesListener}
 import com.typesafe.scalalogging.StrictLogging
 import com.unknownnpc.media.extractor.ExtractorService
 import com.unknownnpc.media.extractor.model.CustomCookie
-import com.unknownnpc.media.integration.DefaultIntegrationProvider
+import com.unknownnpc.media.integration.{DefaultIntegrationProvider, IntegrationResult, IntegrationStatus}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Promise}
@@ -30,11 +30,11 @@ object AppMain extends StrictLogging:
         Option(update.message) match
           case Some(message) if TelegramValidUserNames.contains(message.from().username()) =>
             logger.info(s"Got the following message: ${message.text()} from the verified user. Processing...")
-            val response: Either[Throwable, Unit] = processingService.publishMedia(message.text())
+            val response: Either[Throwable, Seq[IntegrationResult]] = processingService.publishMedia(message.text())
             response match {
-              case Right(_) =>
-                logger.info(s"Message processing has been done successfully: $response")
-                TelegramBot.execute(new SendMessage(message.chat().id(), "✅ Your message has been processed successfully."))
+              case Right(results) =>
+                val integrationResultsFmtStr = formatIntegrationResults(results)
+                TelegramBot.execute(new SendMessage(message.chat().id(), integrationResultsFmtStr))
               case Left(error) =>
                 logger.error(s"Error processing message: ${message.text()} - $error")
                 TelegramBot.execute(new SendMessage(message.chat().id(), s"❌ Failed to process your message: ${message.text()}."))
@@ -46,3 +46,13 @@ object AppMain extends StrictLogging:
     )
     logger.info("App has been started")
     Await.result(Promise[Unit]().future, Duration.Inf)
+
+  def formatIntegrationResults(results: Seq[IntegrationResult]): String = {
+    results.map { result =>
+      val statusMessage = result.status match {
+        case IntegrationStatus.Successful => "Successful ✅"
+        case IntegrationStatus.Failure(errorMessage) => s"Failure ❌: $errorMessage"
+      }
+      s"Integration: ${result.integrationName}\nStatus: $statusMessage"
+    }.mkString("\n\n")
+  }

@@ -13,7 +13,7 @@ private[integration] case class TelegramSocialMedia(chatId: Long, telegramBot: T
 
   override val name: String = "telegram"
 
-  override def send(filePath: Path, extension: Extension): SenderTask =
+  override def send(filePath: Path, extension: Extension) =
     val response: SendResponse = extension match
       case JPEG =>
         telegramBot.execute(SendPhoto(chatId, filePath.toFile))
@@ -22,7 +22,7 @@ private[integration] case class TelegramSocialMedia(chatId: Long, telegramBot: T
 
     if response.isOk then
       logger.info(s"Payload has been sent to the telegram chat: $chatId")
-      Right(())
+      IntegrationResult(name, IntegrationStatus.Successful)
     else
       logger.error(s"Unable send payload to telegram chat: [${response.toString}]")
-      Left(new RuntimeException("Unable to send request"))
+      IntegrationResult(name, IntegrationStatus.Failure(response.errorCode().toString))

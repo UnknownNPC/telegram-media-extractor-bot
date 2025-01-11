@@ -6,8 +6,6 @@ import java.nio.file.Path
 
 trait SocialMediaIntegration:
 
-  type SenderTask = Either[Throwable, Unit]
-
   def name: String
 
-  def send(filePath: Path, extension: Extension): SenderTask
+  def send(filePath: Path, extension: Extension): IntegrationResult

@@ -9,7 +9,7 @@ import twitter4j.auth.AccessToken
 import java.io.FileInputStream
 import java.nio.file.Path
 import scala.jdk.CollectionConverters.*
-import scala.util.{Try, Using}
+import scala.util.{Failure, Success, Try, Using}
 
 private[integration] case class TwitterSocialMedia(apiKey: String, apiSecret: String,
                                                    accessToken: String, accessTokenSecret: String
@@ -22,7 +22,7 @@ private[integration] case class TwitterSocialMedia(apiKey: String, apiSecret: St
 
   override val name: String = TwitterSocialMedia.TwitterName
 
-  override def send(filePath: Path, extension: Extension): SenderTask =
+  override def send(filePath: Path, extension: Extension) =
     Try {
 
       val mediaCategory = extension match
@@ -34,7 +34,11 @@ private[integration] case class TwitterSocialMedia(apiKey: String, apiSecret: St
       val createTweet = TwitterV2Client.createTweet(null, null, null, Array(mediaId), Array.empty,
         null, null, null, null, null, null, TwitterSocialMedia.TweetText)
       logger.info(s"Tweet successfully sent with ID: ${createTweet.getId}")
-    }.toEither
+    } match
+      case Success(_) =>
+        IntegrationResult(name, IntegrationStatus.Successful)
+      case Failure(exception) =>
+        IntegrationResult(name, IntegrationStatus.Failure(exception.getMessage))
 
   private def uploadMedia(twitter: Twitter, filePath: Path, mediaCategory: String): Either[Throwable, Long] =
 
