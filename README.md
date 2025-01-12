@@ -51,7 +51,8 @@ The bot supports integration with Telegram and Twitter. It downloads media files
 
 1. **Scala 3**: Ensure you have Scala 3 installed on your machine.
 2. **Selenium WebDriver**: Install and configure the necessary Selenium drivers for your browser.
-3. **Telegram Bot API Key**: Obtain an API key by creating a bot through [BotFather](https://core.telegram.org/bots#botfather).
+3. **Telegram Bot API Key** (Optional): Obtain an API key by creating a bot through [BotFather](https://core.telegram.org/bots#botfather).
+4. **Twitter API Keys** (Optional): Obtain API keys on [Twitter Dev Platform](https://developer.x.com/en)
 
 ### Environment Variables:
 
