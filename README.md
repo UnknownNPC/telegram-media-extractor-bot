@@ -2,12 +2,11 @@
 
 ## Overview
 
-Telegram Media Extractor Bot is a Scala 3 project designed to download media from external platforms (currently Twitter
-and Instagram in test mode) and post it to a specified Telegram group. The bot uses Selenium for downloading media files
-and interacts with Telegram's API to upload and share these files.
+Telegram Media Extractor Bot is a Scala 3 project designed to download media from external platforms  and post it to a specified Telegram group or/and Twitter account.
 
-**This project does not aim to provide stability or production-grade reliability. It is primarily intended as a
-convenience tool for reposting media.**
+Instagram is currently under development, but it can likely download images if valid `WEB_CLIENT_COOKIES` are provided.
+
+The bot supports integration with Telegram and Twitter. It downloads media files and posts them to these platforms if the environment variables are set for each integration.
 
 ## Usage
 
@@ -15,11 +14,10 @@ convenience tool for reposting media.**
 2. The bot validates the user ID against the `TELEGRAM_VALID_USERS` list.
 3. If valid, the bot uses Selenium to download the media. Supported scenarios include:
     - JPEG images
-    - MP4 files (GIFs from Twitter are natively stored as MP4 and posted as-is to Telegram).
+    - MP4 files (GIFs from Twitter are natively stored as MP4 and downloaded in this format)
     - Videos (including MP4 format)
-4. The downloaded media is uploaded to the Telegram group specified by `TELEGRAM_TARGET_CHAT_ID` (if
-   `TELEGRAM_TARGET_BOT_API_KEY` and `TELEGRAM_TARGET_CHAT_ID` are specified). Twitter media extraction requires updated
-   integration parameters to be set.
+    - Direct links to images or MP4 files
+4. The downloaded media is uploaded to the Telegram group or sent back to Twitter based on the configured integrations.
 
 ### Current Features:
 
@@ -27,18 +25,30 @@ convenience tool for reposting media.**
     - JPEG images
     - GIFs (stored as MP4 in both Twitter and Telegram)
     - Videos (MP4)
-- **Platform Integration:**
-    - Twitter: Media URLs provided to the bot
-    - Instagram: In test mode, images are downloaded and published successfully.
 
-**Important: Links to the middle of a thread or complex URLs may fail. For higher reliability, use direct links to
-single posts with media.**
-**Please check tests to understand what type of URLs work at the current moment.**
+**Platform Integration:**
+
+- **Integrations (Where the bot sends media):**
+
+    - Telegram: Posts downloaded media to a group or chat. Requires `TELEGRAM_TARGET_BOT_API_KEY` and `TELEGRAM_TARGET_CHAT_ID` to be specified.
+    - Twitter: Posts downloaded media back to Twitter. Requires `TWITTER_API_KEY`, `TWITTER_API_SECRET`, `TWITTER_ACCESS_TOKEN`, and `TWITTER_ACCESS_TOKEN_SECRET` to be specified.
+
+- **External Platforms (Where the bot retrieves media):**
+
+    - Twitter: Extracts media from provided URLs.
+    - Direct Links: Downloads media directly from MP4 or JPEG URLs.
+
+- **External Platforms (Where the bot retrieves media):**
+
+    - Twitter: Extracts media from provided URLs.
+    - Direct Links: Downloads media directly from MP4 or JPEG URLs.
+
+**Important: Links to the middle of a thread or complex URLs may fail. For higher reliability, use direct links to single posts with media or direct media file URLs.**
 
 ### Planned Improvements:
 
 - Improving edge-case handling for Twitter media
-- Enhancing support for Instagram videos and stories
+- Developing stable support for downloading media from Instagram
 
 ## Getting Started
 
@@ -46,15 +56,14 @@ single posts with media.**
 
 1. **Scala 3**: Ensure you have Scala 3 installed on your machine.
 2. **Selenium WebDriver**: Install and configure the necessary Selenium drivers for your browser.
-3. **Telegram Bot API Key**: Obtain an API key by creating a bot
-   through [BotFather](https://core.telegram.org/bots#botfather).
+3. **Telegram Bot API Key**: Obtain an API key by creating a bot through [BotFather](https://core.telegram.org/bots#botfather).
 
 ### Environment Variables:
 
 To run the bot, the following environment variables must be set:
 
 | Variable Name                 | Description                                                                                        |
-|-------------------------------|----------------------------------------------------------------------------------------------------|
+| ----------------------------- | -------------------------------------------------------------------------------------------------- |
 | `TELEGRAM_BOT_API_KEY`        | The API key for your Telegram bot to receive messages.                                             |
 | `TELEGRAM_VALID_USERS`        | A comma-separated list of user IDs allowed to interact with the bot.                               |
 | `TELEGRAM_TARGET_BOT_API_KEY` | *(Optional)* The API key for your Telegram bot to post media to the target group.                  |
@@ -125,19 +134,6 @@ sbt run
    ```bash
    docker-compose down
    ```
-
-## Limitations:
-
-- **Media Support:**
-    - Currently supports JPEG images, MP4 files (originating as GIFs from Twitter), and videos.
-    - Experimental support for Instagram media (images) — functionality is in testing mode and may be unstable.
-- **Integration:**
-    - Telegram integration requires both `TELEGRAM_TARGET_BOT_API_KEY` and `TELEGRAM_TARGET_CHAT_ID` to be set. If
-      either is missing, media posting to Telegram will not work.
-    - Twitter integration requires `TWITTER_API_KEY`, `TWITTER_API_SECRET`, `TWITTER_ACCESS_TOKEN`, and
-      `TWITTER_ACCESS_TOKEN_SECRET`. If any of these are not provided, Twitter media extraction will not work.
-- **URL Complexity:** Links to threads or specific parts of conversations may fail. Use simple URLs pointing to single
-  posts for better results.
 
 ## Contributing:
 
