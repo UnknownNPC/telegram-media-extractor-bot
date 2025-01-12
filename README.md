@@ -38,11 +38,6 @@ The bot supports integration with Telegram and Twitter. It downloads media files
     - Twitter: Extracts media from provided URLs.
     - Direct Links: Downloads media directly from MP4 or JPEG URLs.
 
-- **External Platforms (Where the bot retrieves media):**
-
-    - Twitter: Extracts media from provided URLs.
-    - Direct Links: Downloads media directly from MP4 or JPEG URLs.
-
 **Important: Links to the middle of a thread or complex URLs may fail. For higher reliability, use direct links to single posts with media or direct media file URLs.**
 
 ### Planned Improvements:
