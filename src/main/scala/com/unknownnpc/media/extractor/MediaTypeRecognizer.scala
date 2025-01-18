@@ -26,7 +26,7 @@ private[extractor] class SeleniumMediaTypeRecognizer(val customCookies: Seq[Cust
         openPage(source, customCookies, DefaultPageAwaitMs) { (driver: ChromeDriver, _) =>
           val jsExecutor = driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor]
           val videos: Seq[WebElement] = driver.findElements(By.tagName("video")).asScala.toSeq
-            .filter(video => video.isDisplayed && isElementVerticallyPartiallyInViewportAndHorizontallyFullyInViewport(jsExecutor, video))
+            .filter(video => isElementVerticallyPartiallyInViewportAndHorizontallyFullyInViewport(jsExecutor, video))
 
           if hasBlobSource(videos) then {
             MediaType.U3M8Page
