@@ -4,15 +4,19 @@ import org.openqa.selenium.{JavascriptExecutor, WebElement}
 
 object SeleniumUtil:
 
-  def isElementInViewport(jsExecutor: JavascriptExecutor, element: WebElement): Boolean =
+  def isElementVerticallyPartiallyInViewportAndHorizontallyFullyInViewport(jsExecutor: JavascriptExecutor, element: WebElement): Boolean =
     jsExecutor.executeScript(
       """
           var rect = arguments[0].getBoundingClientRect();
+          var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+          var windowWidth = window.innerWidth || document.documentElement.clientWidth;
+
           return (
-            rect.top >= 0 &&
+            rect.bottom > 0 &&
+            rect.top < windowHeight &&
             rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+            rect.right <= windowWidth
           );
-        """.stripMargin, element
+      """.stripMargin, element
     ).asInstanceOf[Boolean]
+

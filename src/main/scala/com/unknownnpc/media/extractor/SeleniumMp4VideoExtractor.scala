@@ -1,7 +1,7 @@
 package com.unknownnpc.media.extractor
 
 import com.unknownnpc.media.extractor.SeleniumWebDriverLike.DefaultPageAwaitMs
-import com.unknownnpc.media.extractor.model.SeleniumUtil.isElementInViewport
+import com.unknownnpc.media.extractor.model.SeleniumUtil.isElementVerticallyPartiallyInViewportAndHorizontallyFullyInViewport
 import com.unknownnpc.media.extractor.model.{CustomCookie, Extension, ExtractorPayload, Result}
 import org.openqa.selenium.{By, JavascriptExecutor, WebElement}
 
@@ -32,7 +32,7 @@ private[extractor] class SeleniumMp4VideoExtractor(val customCookies: Seq[Custom
 
       val jsExecutor = driver.asInstanceOf[JavascriptExecutor]
 
-      val videosInViewport = videos.filter(img => isElementInViewport(jsExecutor, img))
+      val videosInViewport = videos.filter(img => isElementVerticallyPartiallyInViewportAndHorizontallyFullyInViewport(jsExecutor, img))
 
       videosInViewport.headOption match
         case Some(media) =>
