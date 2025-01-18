@@ -23,7 +23,7 @@ private[extractor] class SeleniumMediaTypeRecognizer(val customCookies: Seq[Cust
       case sourceStr if sourceStr.endsWith(".jpeg") || sourceStr.endsWith(".jpg") =>
         MediaType.JpegUrl
       case _ =>
-        openPage(source, customCookies, DefaultPageAwaitMs / 2) { (driver: ChromeDriver, _) =>
+        openPage(source, customCookies, DefaultPageAwaitMs) { (driver: ChromeDriver, _) =>
           val jsExecutor = driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor]
           val videos: Seq[WebElement] = driver.findElements(By.tagName("video")).asScala.toSeq
             .filter(video => video.isDisplayed && isElementInViewport(jsExecutor, video))
