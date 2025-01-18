@@ -17,10 +17,11 @@ private[extractor] class SeleniumMediaTypeRecognizer(val customCookies: Seq[Cust
   extends MediaTypeRecognizer with StrictLogging with SeleniumWebDriverLike:
 
   override def getMediaType(source: URL): MediaType = {
-    val mediaType = source.toString match
+    val mediaType = source.toString.toLowerCase match
       case sourceStr if sourceStr.endsWith(".mp4") =>
         MediaType.Mp4Url
-      case sourceStr if sourceStr.endsWith(".jpeg") => MediaType.JpegUrl
+      case sourceStr if sourceStr.endsWith(".jpeg") || sourceStr.endsWith(".jpg") =>
+        MediaType.JpegUrl
       case _ =>
         openPage(source, customCookies, DefaultPageAwaitMs / 2) { (driver: ChromeDriver, _) =>
           val jsExecutor = driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor]
