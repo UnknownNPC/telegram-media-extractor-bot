@@ -11,7 +11,6 @@ private[extractor] object ExtractorChromeDriver:
   private val options = new ChromeOptions() {
     addArguments("--no-sandbox")
     addArguments("--headless")
-    addArguments("--disable-dev-shm-usage")
     addArguments("--enable-javascript")
     addArguments("--disable-gpu")
     addArguments(s"--window-size=$ScreenWidth,$ScreenHeight")

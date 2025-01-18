@@ -2,7 +2,7 @@ version: '3.6'
 
 services:
   telegram-media-extractor-bot:
-    shm_size: '512mb'
+    shm_size: '1g'
     image: hseeberger/scala-sbt:11.0.13_1.6.2_3.1.1
     container_name: telegram_media_extractor_bot
     environment:
