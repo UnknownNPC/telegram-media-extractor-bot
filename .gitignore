@@ -2,5 +2,6 @@
 .idea
 target
 **/target
-**/project
+**/project/project
+**/project/target
 .env

@@ -7,6 +7,16 @@ lazy val root = (project in file("."))
   .settings(
     name := "telegram-media-extractor-bot",
   )
+  .settings(assemblySettings *)
+
+lazy val assemblySettings = Seq(
+  assembly / assemblyJarName := "telegram-media-extractor-bot.jar",
+  assembly / mainClass := Some("com.unknownnpc.media.AppMain"),
+  assembly / assemblyMergeStrategy := {
+    case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+    case _ => MergeStrategy.first
+  }
+)
 
 libraryDependencies ++= Seq(
   "org.seleniumhq.selenium" % "selenium-java" % "4.27.0",

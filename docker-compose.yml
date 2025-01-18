@@ -15,7 +15,7 @@ services:
       - TWITTER_ACCESS_TOKEN=${TWITTER_ACCESS_TOKEN}
       - TWITTER_ACCESS_TOKEN_SECRET=${TWITTER_ACCESS_TOKEN_SECRET}
       - WEB_CLIENT_COOKIES=${WEB_CLIENT_COOKIES}
-      - SBT_OPTS=-Xmx512m -Xms256m -XX:MaxMetaspaceSize=256m
+      - JAVA_OPTS=-Xmx512m -Xms256m -XX:MaxMetaspaceSize=256m
     volumes:
       - .:/app
       - ~/.m2:/root/.m2
@@ -26,4 +26,5 @@ services:
       echo 'deb http://dl.google.com/linux/chrome/deb/ stable main' > /etc/apt/sources.list.d/google-chrome.list &&
       apt-get update && apt-get install -y google-chrome-stable ffmpeg &&
       echo 'Running the scala project' && 
-      sbt run"
+      sbt assembly &&
+      java -jar target/scala-3.6.2/telegram-media-extractor-bot.jar"
