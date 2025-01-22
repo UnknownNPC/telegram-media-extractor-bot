@@ -3,9 +3,11 @@ package com.unknownnpc.media.integration
 import com.typesafe.scalalogging.StrictLogging
 import com.unknownnpc.media.fs.{ImageSaveResult, SaveResult, VideoSaveResult}
 import social.bigbone.MastodonClient
+import social.bigbone.api.entity.MediaAttachment
 import social.bigbone.api.entity.data.Visibility
 import social.bigbone.api.method.{FileAsMediaAttachment, MediaMethods, StatusMethods}
 
+import scala.annotation.nowarn
 import scala.jdk.CollectionConverters.*
 import scala.util.{Failure, Success, Try}
 
@@ -49,6 +51,17 @@ private[integration] case class MastodonSocialMedia(instanceName: String, access
   }
 
   private def uploadMedia(saveResult: SaveResult): Try[String] = {
+    @nowarn("msg=Use async variant which returns after upload but before media attachment has been processed.")
+    def uploadMediaSync(mediaAttachment: FileAsMediaAttachment): MediaAttachment = {
+      mediaMethods.uploadMedia(
+        mediaAttachment.getFile,
+        mediaAttachment.getMediaType,
+        null,
+        null,
+        null
+      ).execute()
+    }
+
     Try {
       val mediaAttachment = saveResult match {
         case ImageSaveResult(path) =>
@@ -56,7 +69,7 @@ private[integration] case class MastodonSocialMedia(instanceName: String, access
         case VideoSaveResult(path, _, _, _) =>
           FileAsMediaAttachment(path.toFile, "video/mp4")
       }
-      val mediaResponse = mediaMethods.uploadMediaAsync(mediaAttachment).execute()
+      val mediaResponse = uploadMediaSync(mediaAttachment)
       mediaResponse.getId
     }
   }
