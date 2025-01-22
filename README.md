@@ -33,7 +33,7 @@ The bot retrieves media URLs from Telegram messages and downloads the associated
 
 - **Telegram**: Posts downloaded media to a group or chat. Requires `TELEGRAM_TARGET_BOT_API_KEY` and `TELEGRAM_TARGET_CHAT_ID` to be specified.
 - **Twitter**: Posts downloaded media back to Twitter. Requires `TWITTER_API_KEY`, `TWITTER_API_SECRET`, `TWITTER_ACCESS_TOKEN`, and `TWITTER_ACCESS_TOKEN_SECRET` to be specified.
-- **Mastodon**: Posts downloaded media to a Mastodon instance. Requires `MASTODON_BASE_URL` and `MASTODON_ACCESS_TOKEN` to be specified.
+- **Mastodon**: Posts downloaded media to a Mastodon instance. Requires `MASTODON_INSTANCE_NAME` and `MASTODON_ACCESS_TOKEN` to be specified.
 
 **External Platform (Where the bot retrieves media):**
 
@@ -72,7 +72,7 @@ To run the bot, the following environment variables must be set:
 | `TWITTER_API_SECRET`          | *(Optional)* The API secret key for accessing Twitter's API.                                       |
 | `TWITTER_ACCESS_TOKEN`        | *(Optional)* The access token for accessing Twitter's API.                                         |
 | `TWITTER_ACCESS_TOKEN_SECRET` | *(Optional)* The access token secret for accessing Twitter's API.                                  |
-| `MASTODON_BASE_URL`           | *(Optional)* The base URL of your Mastodon instance.                                               |
+| `MASTODON_INSTANCE_NAME`           | *(Optional)* The base URL of your Mastodon instance.                                               |
 | `MASTODON_ACCESS_TOKEN`       | *(Optional)* The access token for accessing the Mastodon API.                                      |
 
 ### Installation
@@ -109,7 +109,7 @@ sbt run
    TWITTER_API_SECRET=your_twitter_api_secret
    TWITTER_ACCESS_TOKEN=your_twitter_access_token
    TWITTER_ACCESS_TOKEN_SECRET=your_twitter_access_token_secret
-   MASTODON_BASE_URL=https://mastodon.example.com
+   MASTODON_INSTANCE_NAME=mastodon.example.com
    MASTODON_ACCESS_TOKEN=your_mastodon_access_token
    ```
 

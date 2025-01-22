@@ -9,12 +9,12 @@ import social.bigbone.api.method.{FileAsMediaAttachment, MediaMethods, StatusMet
 import scala.jdk.CollectionConverters.*
 import scala.util.{Failure, Success, Try}
 
-private[integration] case class MastodonSocialMedia(baseUrl: String, accessToken: String)
+private[integration] case class MastodonSocialMedia(instanceName: String, accessToken: String)
   extends SocialMediaIntegration with StrictLogging {
 
   override val name: String = "mastodon"
 
-  private val client: MastodonClient = MastodonClient.Builder(baseUrl)
+  private val client: MastodonClient = MastodonClient.Builder(instanceName)
     .accessToken(accessToken)
     .build()
 

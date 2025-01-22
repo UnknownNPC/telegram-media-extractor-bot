@@ -24,9 +24,9 @@ case class DefaultIntegrationProvider() extends IntegrationProvider with StrictL
 
   private val MastodonIntegrationFields =
     for {
-      baseUrl <- sys.env.get("MASTODON_BASE_URL")
+      instanceName <- sys.env.get("MASTODON_INSTANCE_NAME")
       accessToken <- sys.env.get("MASTODON_ACCESS_TOKEN")
-    } yield (baseUrl, accessToken)
+    } yield (instanceName, accessToken)
 
   override def getIntegrations: Seq[SocialMediaIntegration] =
     Seq(
@@ -38,8 +38,8 @@ case class DefaultIntegrationProvider() extends IntegrationProvider with StrictL
         logger.info("Twitter integration fields were found. Enabling Twitter integration")
         TwitterSocialMedia(apiKey, apiSecret, accessToken, accessTokenSecret)
       }),
-      MastodonIntegrationFields.map((baseUrl, accessToken) => {
+      MastodonIntegrationFields.map((instanceName, accessToken) => {
         logger.info("Mastodon integration fields were found. Enabling Mastodon integration")
-        MastodonSocialMedia(baseUrl, accessToken)
+        MastodonSocialMedia(instanceName, accessToken)
       })
     ).flatten
