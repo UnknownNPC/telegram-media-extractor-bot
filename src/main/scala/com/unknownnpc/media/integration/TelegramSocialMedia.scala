@@ -4,21 +4,20 @@ import com.pengrad.telegrambot.TelegramBot
 import com.pengrad.telegrambot.request.{SendPhoto, SendVideo}
 import com.pengrad.telegrambot.response.SendResponse
 import com.typesafe.scalalogging.StrictLogging
-import com.unknownnpc.media.extractor.model.Extension
 import com.unknownnpc.media.extractor.model.Extension.*
-
-import java.nio.file.Path
+import com.unknownnpc.media.fs.{ImageSaveResult, SaveResult, VideoSaveResult}
 
 private[integration] case class TelegramSocialMedia(chatId: Long, telegramBot: TelegramBot) extends SocialMediaIntegration with StrictLogging:
 
   override val name: String = "telegram"
 
-  override def send(filePath: Path, extension: Extension) =
-    val response: SendResponse = extension match
-      case JPEG =>
-        telegramBot.execute(SendPhoto(chatId, filePath.toFile))
-      case MP4 | M3U8 =>
-        telegramBot.execute(SendVideo(chatId, filePath.toFile))
+  override def send(filePath: SaveResult): IntegrationResult =
+    val response: SendResponse = filePath match
+      case ImageSaveResult(path) =>
+        telegramBot.execute(SendPhoto(chatId, path.toFile))
+      case VideoSaveResult(path, width, height, thumbnail) =>
+        val video = SendVideo(chatId, path.toFile).width(width).height(height).thumbnail(thumbnail.toFile)
+        telegramBot.execute(video)
 
     if response.isOk then
       logger.info(s"Payload has been sent to the telegram chat: $chatId")

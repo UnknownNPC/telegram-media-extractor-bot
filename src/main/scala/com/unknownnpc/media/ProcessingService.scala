@@ -2,6 +2,7 @@ package com.unknownnpc.media
 
 import com.typesafe.scalalogging.StrictLogging
 import com.unknownnpc.media.extractor.ExtractorService
+import com.unknownnpc.media.fs.{FileStorage, FileStorageImpl}
 import com.unknownnpc.media.integration.{IntegrationResult, SocialMediaIntegration}
 
 trait ProcessingService:
@@ -14,6 +15,6 @@ class ProcessingServiceImpl(extractorService: ExtractorService,
   override def publishMedia(message: String): Either[Throwable, Seq[IntegrationResult]] =
     for {
       extractorPayload <- extractorService.getMediaUrl(message).toRight(new RuntimeException("Cannot get media url"))
-      localFile <- fileStorage.save(extractorPayload)
-      integrationRunResults = integrations.map(_.send(localFile, extractorPayload.extension))
+      saveResult <- fileStorage.save(extractorPayload)
+      integrationRunResults = integrations.map(_.send(saveResult))
     } yield integrationRunResults

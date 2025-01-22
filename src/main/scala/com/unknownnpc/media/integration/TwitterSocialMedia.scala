@@ -3,6 +3,7 @@ package com.unknownnpc.media.integration
 import com.typesafe.scalalogging.StrictLogging
 import com.unknownnpc.media.extractor.model.Extension
 import com.unknownnpc.media.extractor.model.Extension.*
+import com.unknownnpc.media.fs.*
 import twitter4j.*
 import twitter4j.auth.AccessToken
 
@@ -22,14 +23,14 @@ private[integration] case class TwitterSocialMedia(apiKey: String, apiSecret: St
 
   override val name: String = TwitterSocialMedia.TwitterName
 
-  override def send(filePath: Path, extension: Extension) =
+  override def send(saveResult: SaveResult): IntegrationResult =
     Try {
 
-      val mediaCategory = extension match
-        case JPEG => TwitterSocialMedia.TweetImageCategory
-        case MP4 | M3U8 => TwitterSocialMedia.TweetVideoCategory
+      val mediaCategory = saveResult match
+        case ImageSaveResult(_) => TwitterSocialMedia.TweetImageCategory
+        case VideoSaveResult(_, _, _, _) => TwitterSocialMedia.TweetVideoCategory
 
-      val mediaId = uploadMedia(TwitterV1Client, filePath, mediaCategory).getOrElse(throw RuntimeException("Unable to create media"))
+      val mediaId = uploadMedia(TwitterV1Client, saveResult.path, mediaCategory).getOrElse(throw RuntimeException("Unable to create media"))
 
       val createTweet = TwitterV2Client.createTweet(null, null, null, Array(mediaId), Array.empty,
         null, null, null, null, null, null, TwitterSocialMedia.TweetText)
