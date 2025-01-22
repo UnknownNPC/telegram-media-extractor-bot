@@ -15,9 +15,9 @@ private[integration] case class TwitterSocialMedia(apiKey: String, apiSecret: St
                                                   ) extends SocialMediaIntegration with StrictLogging:
 
   override val name: String = TwitterSocialMedia.TwitterName
+  private val TwitterV1Client = TwitterFactory.getSingleton
   TwitterV1Client.setOAuthConsumer(apiKey, apiSecret)
   TwitterV1Client.setOAuthAccessToken(new AccessToken(accessToken, accessTokenSecret))
-  private val TwitterV1Client = TwitterFactory.getSingleton
   private val TwitterV2Client = TwitterV2ExKt.getV2(TwitterV1Client)
 
   override def send(saveResult: SaveResult): IntegrationResult =
