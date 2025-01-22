@@ -45,7 +45,6 @@ The bot retrieves media URLs from Telegram messages and downloads the associated
 
 - Improving edge-case handling for Twitter media
 - Developing stable support for downloading media from Instagram
-- Enhancing Mastodon integration with additional features
 
 ## Getting Started
 
