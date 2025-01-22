@@ -22,14 +22,24 @@ case class DefaultIntegrationProvider() extends IntegrationProvider with StrictL
       accessTokenSecret <- sys.env.get("TWITTER_ACCESS_TOKEN_SECRET")
     } yield (apiKey, apiSecret, accessToken, accessTokenSecret)
 
+  private val MastodonIntegrationFields =
+    for {
+      baseUrl <- sys.env.get("MASTODON_BASE_URL")
+      accessToken <- sys.env.get("MASTODON_ACCESS_TOKEN")
+    } yield (baseUrl, accessToken)
+
   override def getIntegrations: Seq[SocialMediaIntegration] =
     Seq(
       TelegramIntegrationFields.map((botApiKey: String, targetChatId: Long) => {
-        logger.info("Telegram integration fields were found. Enabling telegram integration")
+        logger.info("Telegram integration fields were found. Enabling Telegram integration")
         TelegramSocialMedia(targetChatId, new TelegramBot(botApiKey))
       }),
       TwitterIntegrationFields.map((apiKey, apiSecret, accessToken, accessTokenSecret) => {
-        logger.info("Twitter integration field was found. Enabling twitter integration")
+        logger.info("Twitter integration fields were found. Enabling Twitter integration")
         TwitterSocialMedia(apiKey, apiSecret, accessToken, accessTokenSecret)
+      }),
+      MastodonIntegrationFields.map((baseUrl, accessToken) => {
+        logger.info("Mastodon integration fields were found. Enabling Mastodon integration")
+        MastodonSocialMedia(baseUrl, accessToken)
       })
     ).flatten

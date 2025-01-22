@@ -1,8 +1,6 @@
 package com.unknownnpc.media.integration
 
 import com.typesafe.scalalogging.StrictLogging
-import com.unknownnpc.media.extractor.model.Extension
-import com.unknownnpc.media.extractor.model.Extension.*
 import com.unknownnpc.media.fs.*
 import twitter4j.*
 import twitter4j.auth.AccessToken
@@ -16,12 +14,11 @@ private[integration] case class TwitterSocialMedia(apiKey: String, apiSecret: St
                                                    accessToken: String, accessTokenSecret: String
                                                   ) extends SocialMediaIntegration with StrictLogging:
 
-  private val TwitterV1Client = TwitterFactory.getSingleton
+  override val name: String = TwitterSocialMedia.TwitterName
   TwitterV1Client.setOAuthConsumer(apiKey, apiSecret)
   TwitterV1Client.setOAuthAccessToken(new AccessToken(accessToken, accessTokenSecret))
+  private val TwitterV1Client = TwitterFactory.getSingleton
   private val TwitterV2Client = TwitterV2ExKt.getV2(TwitterV1Client)
-
-  override val name: String = TwitterSocialMedia.TwitterName
 
   override def send(saveResult: SaveResult): IntegrationResult =
     Try {

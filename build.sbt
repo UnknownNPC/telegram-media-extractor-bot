@@ -2,6 +2,7 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "3.6.2"
 ThisBuild / concurrentRestrictions := Tags.limit(Tags.Test, 3) :: Nil
+ThisBuild / resolvers += "BigBone lib repo" at "https://s01.oss.sonatype.org/content/repositories/snapshots/"
 
 lazy val root = (project in file("."))
   .settings(
@@ -27,6 +28,7 @@ libraryDependencies ++= Seq(
   "org.twitter4j" % "twitter4j-core" % "2.1.8",
   "io.github.takke" % "jp.takke.twitter4j-v2" % "1.4.4",
   "org.apache.httpcomponents.client5" % "httpclient5" % "5.4",
+  "social.bigbone" % "bigbone"  % "2.0.0-SNAPSHOT",
   "org.scalatest" %% "scalatest" % "3.2.19" % Test,
   "org.scalamock" %% "scalamock" % "6.1.1" % Test
 )
