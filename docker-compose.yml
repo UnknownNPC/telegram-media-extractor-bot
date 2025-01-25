@@ -2,9 +2,14 @@ version: '3.6'
 
 services:
   telegram-media-extractor-bot:
-    shm_size: '2g'
+    shm_size: '4g'
     image: hseeberger/scala-sbt:11.0.13_1.6.2_3.1.1
     container_name: telegram_media_extractor_bot
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+          cpus: '1'
     environment:
       - TELEGRAM_BOT_API_KEY=${TELEGRAM_BOT_API_KEY}
       - TELEGRAM_VALID_USERS=${TELEGRAM_VALID_USERS}
@@ -17,7 +22,7 @@ services:
       - MASTODON_INSTANCE_NAME=${MASTODON_INSTANCE_NAME}
       - MASTODON_ACCESS_TOKEN=${MASTODON_ACCESS_TOKEN}
       - WEB_CLIENT_COOKIES=${WEB_CLIENT_COOKIES}
-      - JAVA_OPTS=-Xmx1g -Xms512m -XX:MaxMetaspaceSize=512m
+      - JAVA_OPTS=-Xmx2g -Xms1g -XX:MaxMetaspaceSize=512m
     volumes:
       - .:/app
       - ~/.m2:/root/.m2
