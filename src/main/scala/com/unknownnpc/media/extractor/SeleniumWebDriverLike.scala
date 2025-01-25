@@ -82,7 +82,7 @@ trait SeleniumWebDriverLike extends StrictLogging:
               logger.info("All XHR requests completed.")
               break(true)
 
-            Thread.sleep(1000)
+            Thread.sleep(5000)
 
           logger.error("Timeout while waiting for XHR requests to complete.")
           false
