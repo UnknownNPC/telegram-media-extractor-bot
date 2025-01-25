@@ -19,4 +19,3 @@ object SeleniumUtil:
           );
       """.stripMargin, element
     ).asInstanceOf[Boolean]
-
