@@ -1,7 +1,6 @@
 package com.unknownnpc.media.extractor
 
 import com.typesafe.scalalogging.StrictLogging
-import com.unknownnpc.media.extractor.SeleniumWebDriverLike.DefaultPageAwaitMs
 import com.unknownnpc.media.extractor.model.{CustomCookie, Extension, ExtractorPayload, Result}
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.devtools.v131.network.Network
@@ -46,4 +45,4 @@ class SeleniumM3u8Extractor(val customCookies: Seq[CustomCookie])
         None
 
   override def extract(url: URL): Result[Option[ExtractorPayload]] =
-    openPage(url, customCookies, DefaultPageAwaitMs)(mainFn, preConfigureFn)
+    openPage(url, customCookies)(mainFn, preConfigureFn)

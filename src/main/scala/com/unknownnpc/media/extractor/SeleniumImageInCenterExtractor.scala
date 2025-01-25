@@ -1,6 +1,5 @@
 package com.unknownnpc.media.extractor
 
-import com.unknownnpc.media.extractor.SeleniumWebDriverLike.DefaultPageAwaitMs
 import com.unknownnpc.media.extractor.model.{CustomCookie, Extension, ExtractorPayload, Result}
 import org.openqa.selenium.{By, JavascriptExecutor, WebElement}
 
@@ -13,7 +12,7 @@ private[extractor] class SeleniumImageInCenterExtractor(val customCookies: Seq[C
   extends Extractor[Option[ExtractorPayload]] with SeleniumWebDriverLike:
 
   override def extract(url: URL): Result[Option[ExtractorPayload]] =
-    openPage(url, customCookies, DefaultPageAwaitMs) { (driver, _) =>
+    openPage(url, customCookies) { (driver, _) =>
       val jsExecutor = driver.asInstanceOf[JavascriptExecutor]
       val centralElement = findCentralElement(jsExecutor)
       centralElement.flatMap(findNearestImageTailRec).map { img =>

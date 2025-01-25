@@ -1,6 +1,7 @@
 package com.unknownnpc.media.extractor
 
 import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
+import scala.jdk.CollectionConverters.*
 
 import scala.util.Using
 
@@ -14,6 +15,7 @@ private[extractor] object ExtractorChromeDriver:
     addArguments("--enable-javascript")
     addArguments("--disable-gpu")
     addArguments(s"--window-size=$ScreenWidth,$ScreenHeight")
+    setCapability("goog:loggingPrefs", Map("performance" -> "ALL").asJava)
   }
 
   def getInstance(): ChromeDriver = new ChromeDriver(options)

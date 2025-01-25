@@ -1,7 +1,6 @@
 package com.unknownnpc.media.extractor
 
 import com.typesafe.scalalogging.StrictLogging
-import com.unknownnpc.media.extractor.SeleniumWebDriverLike.DefaultPageAwaitMs
 import com.unknownnpc.media.extractor.model.SeleniumUtil.isElementVerticallyPartiallyInViewportAndHorizontallyFullyInViewport
 import com.unknownnpc.media.extractor.model.{CustomCookie, MediaType}
 import org.openqa.selenium.chrome.ChromeDriver
@@ -23,7 +22,7 @@ private[extractor] class SeleniumMediaTypeRecognizer(val customCookies: Seq[Cust
       case sourceStr if sourceStr.endsWith(".jpeg") || sourceStr.endsWith(".jpg") =>
         MediaType.JpegUrl
       case _ =>
-        openPage(source, customCookies, DefaultPageAwaitMs) { (driver: ChromeDriver, _) =>
+        openPage(source, customCookies) { (driver: ChromeDriver, _) =>
           val jsExecutor = driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor]
           val videos: Seq[WebElement] = driver.findElements(By.tagName("video")).asScala.toSeq
             .filter(video => isElementVerticallyPartiallyInViewportAndHorizontallyFullyInViewport(jsExecutor, video))
