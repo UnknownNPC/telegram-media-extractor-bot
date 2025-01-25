@@ -59,7 +59,7 @@ trait SeleniumWebDriverLike extends StrictLogging:
     val startTime = System.currentTimeMillis()
     val endTime = startTime + awaitTimeout
 
-    logger.info("Waiting for all XHR requests to complete...")
+    logger.info("Waiting for the page to fully load...")
 
     def measureTime[T](actionName: String)(block: => T): (T, Long) =
       val start = System.currentTimeMillis()
@@ -89,7 +89,7 @@ trait SeleniumWebDriverLike extends StrictLogging:
       }._1
 
     def waitForPageRender(): Boolean =
-      measureTime("Checking page rendering with WebDriverWait") {
+      measureTime("Waiting for page rendering") {
         val wait = new WebDriverWait(driver, Duration.ofMillis(awaitTimeout))
 
         val isReadyStateComplete = wait.until((d: WebDriver) =>
@@ -104,7 +104,7 @@ trait SeleniumWebDriverLike extends StrictLogging:
 
         val isContentVisible = wait.until((d: WebDriver) =>
           d.asInstanceOf[JavascriptExecutor].executeScript(
-            """return Array.from(document.querySelectorAll('body, div, img')).some(el => {
+            """return Array.from(document.querySelectorAll('body *')).some(el => {
               |  const style = getComputedStyle(el);
               |  return style.visibility !== 'hidden' && style.opacity > 0 && el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height > 0;
               |});"""
@@ -117,13 +117,13 @@ trait SeleniumWebDriverLike extends StrictLogging:
 
     Try {
       val (xhrSuccess, xhrTime) = measureTime("Total time for waitForXHRRequests")(waitForXHRRequests())
-      val (renderSuccess, renderTime) = measureTime("Total time for isPageRendered")(waitForPageRender())
+      val (renderSuccess, renderTime) = measureTime("Total time for waitForPageRender")(waitForPageRender())
 
       if xhrSuccess && renderSuccess then
-        logger.info(s"Page fully rendered after XHR. Total time spent: ${xhrTime + renderTime} ms.")
+        logger.info(s"Page fully loaded. Total time spent: ${xhrTime + renderTime} ms.")
         true
       else
-        logger.error(s"Page rendering failed. XHR time: $xhrTime ms, Render time: $renderTime ms.")
+        logger.error(s"Page loading failed. XHR time: $xhrTime ms, Render time: $renderTime ms.")
         false
     } match {
       case Success(result) => result

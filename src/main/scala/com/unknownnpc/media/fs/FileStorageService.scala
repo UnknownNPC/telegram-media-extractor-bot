@@ -1,6 +1,7 @@
 package com.unknownnpc.media.fs
 
 import com.typesafe.scalalogging.StrictLogging
+import com.unknownnpc.media.extractor.model.Extension.MP4
 import com.unknownnpc.media.extractor.model.{Extension, ExtractorPayload}
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.impl.classic.{CloseableHttpClient, HttpClients}
@@ -34,8 +35,15 @@ class FileStorageImpl extends FileStorage with StrictLogging:
         yield VideoSaveResult(tempFilePath, dimensions._1, dimensions._2, thumbnailPath)
 
       case Array(url) =>
-        httpFileDownload(url.toURI, tempFilePath).map(ImageSaveResult(_))
-
+        httpFileDownload(url.toURI, tempFilePath).flatMap(saveResult => {
+          if extractorPayload.extension == MP4 then
+            for {
+              thumbnailPath <- generateThumbnail(tempFilePath)
+              dimensions <- extractVideoDimensions(tempFilePath)
+            }  yield VideoSaveResult(saveResult, dimensions._1, dimensions._2, thumbnailPath)
+          else
+            Right(ImageSaveResult(saveResult))
+        })
       case _ =>
         Left(new RuntimeException(s"Unable to process extractor URLs: $extractorPayload"))
 
