@@ -1,6 +1,6 @@
 package com.unknownnpc.media.extractor
 
-import com.unknownnpc.media.extractor.model.SeleniumUtil.isElementVerticallyPartiallyInViewportAndHorizontallyFullyInViewport
+import SeleniumUtil.isElementVerticallyPartiallyInViewportAndHorizontallyFullyInViewport
 import com.unknownnpc.media.extractor.model.{CustomCookie, Extension, ExtractorPayload, Result}
 import org.openqa.selenium.{By, JavascriptExecutor, WebElement}
 

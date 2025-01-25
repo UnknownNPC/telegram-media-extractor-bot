@@ -1,7 +1,7 @@
 package com.unknownnpc.media.extractor
 
 import com.typesafe.scalalogging.StrictLogging
-import com.unknownnpc.media.extractor.model.SeleniumUtil.isElementVerticallyPartiallyInViewportAndHorizontallyFullyInViewport
+import com.unknownnpc.media.extractor.SeleniumUtil.isElementVerticallyPartiallyInViewportAndHorizontallyFullyInViewport
 import com.unknownnpc.media.extractor.model.{CustomCookie, MediaType}
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.{By, WebElement}
@@ -31,8 +31,10 @@ private[extractor] class SeleniumMediaTypeRecognizer(val customCookies: Seq[Cust
             MediaType.U3M8Page
           } else if (hasMp4Source(videos)) {
             MediaType.Mp4Page
-          } else {
+          } else if (SeleniumUtil.findTagInScreenCenter("img", driver).isDefined) {
             MediaType.ImagePage
+          } else {
+            MediaType.Unknown
           }
         }.getOrElse(MediaType.Unknown)
 
