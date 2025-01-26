@@ -52,13 +52,13 @@ private[integration] case class MastodonSocialMedia(instanceName: String, access
 
   private def uploadMedia(saveResult: SaveResult): Try[String] = {
     @nowarn("msg=Use async variant which returns after upload but before media attachment has been processed.")
-    def uploadMediaSync(mediaAttachment: FileAsMediaAttachment): MediaAttachment = {
+    def uploadMediaSync(mediaAttachment: FileAsMediaAttachment, thumbnailAttachmentOpt: Option[FileAsMediaAttachment]): MediaAttachment = {
       mediaMethods.uploadMedia(
         mediaAttachment.getFile,
         mediaAttachment.getMediaType,
         null,
         null,
-        null
+        thumbnailAttachmentOpt.orNull
       ).execute()
     }
 
@@ -69,7 +69,14 @@ private[integration] case class MastodonSocialMedia(instanceName: String, access
         case VideoSaveResult(path, _, _, _) =>
           FileAsMediaAttachment(path.toFile, "video/mp4")
       }
-      val mediaResponse = uploadMediaSync(mediaAttachment)
+
+      val thumbnailAttachmentOpt = saveResult match {
+        case VideoSaveResult(_, _, _, thumbnail) =>
+          Some(FileAsMediaAttachment(thumbnail.toFile, "image/jpeg"))
+        case _ => None
+      }
+
+      val mediaResponse = uploadMediaSync(mediaAttachment, thumbnailAttachmentOpt)
       mediaResponse.getId
     }
   }
