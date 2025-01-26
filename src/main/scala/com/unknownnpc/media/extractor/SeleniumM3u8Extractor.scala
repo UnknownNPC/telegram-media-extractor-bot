@@ -15,19 +15,7 @@ class SeleniumM3u8Extractor(val customCookies: Seq[CustomCookie])
   extends Extractor[Option[ExtractorPayload]] with SeleniumWebDriverLike with StrictLogging:
 
   val preConfigureFn: ChromeDriver => CopyOnWriteArrayList[String] = driver =>
-    val m3u8Urls = new CopyOnWriteArrayList[String]()
-
-    val devTools = driver.getDevTools
-    devTools.createSession()
-    devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()))
-
-    devTools.addListener(Network.requestWillBeSent(), new java.util.function.Consumer[RequestWillBeSent] {
-      override def accept(request: RequestWillBeSent): Unit =
-        val requestUrl = request.getRequest.getUrl
-        if requestUrl.endsWith("m3u8") then
-          m3u8Urls.add(requestUrl)
-    })
-    m3u8Urls
+    SeleniumUtil.runUrlsListenerScanner(_.endsWith("m3u8"))(driver)
 
   val mainFn: (ChromeDriver, CopyOnWriteArrayList[String]) => Option[ExtractorPayload] = (driver, m3u8Urls) =>
     if m3u8Urls.isEmpty then

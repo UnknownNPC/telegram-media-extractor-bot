@@ -2,8 +2,13 @@ package com.unknownnpc.media.extractor
 
 import com.typesafe.scalalogging.StrictLogging
 import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.devtools.v131.network.Network
+import org.openqa.selenium.devtools.v131.network.model.RequestWillBeSent
 import org.openqa.selenium.{By, JavascriptExecutor, WebElement}
 
+import java.net.URL
+import java.util.Optional
+import java.util.concurrent.CopyOnWriteArrayList
 import scala.annotation.tailrec
 import scala.jdk.CollectionConverters.*
 import scala.util.Try
@@ -76,3 +81,19 @@ object SeleniumUtil extends StrictLogging:
     getCentralElement
       .flatMap(element => findClosestElementByTag(tagName, element))
       .filter(isElementInCenter)
+
+  def runUrlsListenerScanner(urlIncludePredicate: String => Boolean): ChromeDriver => CopyOnWriteArrayList[String] = driver =>
+    val segmentedUrls = new CopyOnWriteArrayList[String]()
+
+    val devTools = driver.getDevTools
+    devTools.createSession()
+    devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()))
+
+    devTools.addListener(Network.requestWillBeSent(), new java.util.function.Consumer[RequestWillBeSent] {
+      override def accept(request: RequestWillBeSent): Unit = {
+        val urlStr = request.getRequest.getUrl
+        if urlIncludePredicate(urlStr) then
+          segmentedUrls.add(urlStr)
+      }
+    })
+    segmentedUrls

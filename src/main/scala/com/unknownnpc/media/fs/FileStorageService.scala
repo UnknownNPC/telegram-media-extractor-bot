@@ -1,7 +1,7 @@
 package com.unknownnpc.media.fs
 
 import com.typesafe.scalalogging.StrictLogging
-import com.unknownnpc.media.extractor.model.Extension.MP4
+import com.unknownnpc.media.extractor.model.Extension.{DUAL_TRACK_MP4, M3U8, MP4}
 import com.unknownnpc.media.extractor.model.{Extension, ExtractorPayload}
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.impl.classic.{CloseableHttpClient, HttpClients}
@@ -20,14 +20,14 @@ class FileStorageImpl extends FileStorage with StrictLogging:
   override def save(extractorPayload: ExtractorPayload): Either[Throwable, SaveResult] =
 
     val targetFileExtension = extractorPayload.extension match
-      case Extension.M3U8 => Extension.MP4
+      case Extension.M3U8 | Extension.DUAL_TRACK_MP4 => Extension.MP4
       case _ => extractorPayload.extension
 
     val tempFilePath = Files.createTempFile(s"download-${UUID.randomUUID().toString}", s".$targetFileExtension")
 
     extractorPayload.urls.toArray match
       case Array(urlOne, urlTwo)
-        if urlOne.toString.toLowerCase.endsWith("m3u8") && urlTwo.toString.toLowerCase.endsWith("m3u8") =>
+        if extractorPayload.extension == M3U8 || extractorPayload.extension == DUAL_TRACK_MP4 =>
         for
           _ <- createVideoFromStreams(urlOne, urlTwo, tempFilePath)
           thumbnailPath <- generateThumbnail(tempFilePath)
@@ -40,7 +40,7 @@ class FileStorageImpl extends FileStorage with StrictLogging:
             for {
               thumbnailPath <- generateThumbnail(tempFilePath)
               dimensions <- extractVideoDimensions(tempFilePath)
-            }  yield VideoSaveResult(saveResult, dimensions._1, dimensions._2, thumbnailPath)
+            } yield VideoSaveResult(saveResult, dimensions._1, dimensions._2, thumbnailPath)
           else
             Right(ImageSaveResult(saveResult))
         })

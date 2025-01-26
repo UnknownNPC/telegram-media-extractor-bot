@@ -15,13 +15,15 @@ object ExtractorService:
     val imageInCenterExtractor = new SeleniumImageInCenterExtractor(customCookies)
     val videoInCenterExtractor = new SeleniumMp4VideoExtractor(customCookies)
     val m3u8Extractor = new SeleniumM3u8Extractor(customCookies)
+    val instagramDualMp4VideoExtractor = new SeleniumInstagramMp4Extractor(customCookies)
     val mediaTypeRecognizer = new SeleniumMediaTypeRecognizer(customCookies)
 
-    new ExtractorService(imageInCenterExtractor, videoInCenterExtractor, m3u8Extractor, mediaTypeRecognizer)
+    new ExtractorService(imageInCenterExtractor, videoInCenterExtractor, m3u8Extractor, instagramDualMp4VideoExtractor, mediaTypeRecognizer)
 
 class ExtractorService(imageExtractor: Extractor[Option[ExtractorPayload]],
                        videoExtractor: Extractor[Option[ExtractorPayload]],
                        m3u8Extractor: Extractor[Option[ExtractorPayload]],
+                       instagramDualMp4VideoExtractor: Extractor[Option[ExtractorPayload]],
                        mediaTypeRecognizer: MediaTypeRecognizer) extends StrictLogging:
 
   def getMediaUrl(pageUrl: String): Option[ExtractorPayload] =
@@ -47,11 +49,13 @@ class ExtractorService(imageExtractor: Extractor[Option[ExtractorPayload]],
           case JpegUrl => Some(ExtractorPayload(Seq(url), JPEG))
           case U3M8Page =>
             retry(3, 5.seconds)(getExtractionResult(m3u8Extractor.extract(url)))
+          case DualTrackMp4Page if url.toString.contains("instagram") =>
+            retry(3, 5.seconds)(getExtractionResult(instagramDualMp4VideoExtractor.extract(url)))
           case Mp4Page =>
             retry(3, 5.seconds)(getExtractionResult(videoExtractor.extract(url)))
           case ImagePage =>
             retry(3, 5.seconds)(getExtractionResult(imageExtractor.extract(url)))
-          case Unknown =>
+          case _ =>
             None
 
       case _ =>

@@ -29,6 +29,9 @@ libraryDependencies ++= Seq(
   "io.github.takke" % "jp.takke.twitter4j-v2" % "1.4.4",
   "org.apache.httpcomponents.client5" % "httpclient5" % "5.4",
   "social.bigbone" % "bigbone"  % "2.0.0-SNAPSHOT",
+  "io.lemonlabs" %% "scala-uri" % "4.0.1",
+  "io.github.json4s" %% "json4s-core" % "4.1.0-M9",
+  "io.github.json4s" %% "json4s-jackson" % "4.1.0-M9",
   "org.scalatest" %% "scalatest" % "3.2.19" % Test,
   "org.scalamock" %% "scalamock" % "6.1.1" % Test
 )

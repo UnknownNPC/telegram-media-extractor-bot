@@ -28,7 +28,10 @@ private[extractor] class SeleniumMediaTypeRecognizer(val customCookies: Seq[Cust
             .filter(video => isElementVerticallyPartiallyInViewportAndHorizontallyFullyInViewport(jsExecutor, video))
 
           if hasBlobSource(videos) then {
-            MediaType.U3M8Page
+            if source.toString.contains("instagram") then
+              MediaType.DualTrackMp4Page
+            else
+              MediaType.U3M8Page
           } else if (hasMp4Source(videos)) {
             MediaType.Mp4Page
           } else if (SeleniumUtil.findTagInScreenCenter("img", driver).isDefined) {
