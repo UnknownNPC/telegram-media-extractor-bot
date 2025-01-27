@@ -2,7 +2,7 @@
 
 ## Overview
 
-Telegram Media Extractor Bot is a Scala 3 application that retrieves media links from Telegram messages and downloads them using browser emulation with Selenium. It then posts the downloaded media to integrations such as Telegram, Twitter, and Mastodon. The bot supports non-complex Twitter posts and experimental Instagram posts, including videos, images, and Reels. Direct links to JPEG and MP4 files are also supported. For private or restricted posts on Instagram and Twitter, authorization via WEB_CLIENT_COOKIES may be required.
+Telegram Media Extractor Bot is a Scala 3 application that retrieves media links from Telegram messages and downloads them using browser emulation with Selenium. It then posts the downloaded media to integrations such as Telegram, Twitter, and Mastodon. The bot supports non-complex Twitter posts and experimental Instagram posts, including videos, images, and Reels. Direct links to JPEG and MP4 files are also supported. For private or restricted posts on Instagram and Twitter, authorization via `WEB_CLIENT_COOKIES` may be required.
 
 **Warning:** This bot makes it very easy to quickly download memes and funny pictures from Instagram and Twitter and repost them to your groups. Use responsibly and respect copyright laws!
 
