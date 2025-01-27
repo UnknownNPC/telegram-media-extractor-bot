@@ -17,8 +17,50 @@ class SeleniumInstagramMp4Extractor(val customCookies: Seq[CustomCookie])
   extends Extractor[Option[ExtractorPayload]] with SeleniumWebDriverLike with StrictLogging:
 
   implicit val JsonFormats: Formats = DefaultFormats
+  val preConfigureFn: ChromeDriver => CopyOnWriteArrayList[String] = driver =>
+    SeleniumUtil.runUrlsListenerScanner(url => {
+      url.contains(".mp4") && url.contains("bytestart") && url.contains("byteend")
+    })(driver)
+  val mainFn: (ChromeDriver, CopyOnWriteArrayList[String]) => Option[ExtractorPayload] = (driver, segmentedUrls) =>
 
-  private case class ClassifiedUrl(urlType: String, url: URL, quality: Int)
+    if segmentedUrls.isEmpty then
+      logger.info("No segmented .mp4 links found.")
+      None
+    else
+      logger.info(s"Segmented URLs received: ${segmentedUrls.size}")
+
+      val uniqueUrls = segmentedUrls.asScala
+        .map(urlStr => Url.parse(urlStr).removeParams("bytestart", "byteend").toJavaURI.toURL)
+        .distinct
+        .toSeq
+
+      logger.info(s"Unique URLs after cleaning: ${uniqueUrls.size}")
+
+      val classifiedUrls = uniqueUrls.flatMap(classifyUrlByEfg)
+
+      logger.info(s"Classified URLs: ${classifiedUrls.size}")
+
+      val bestVideo = classifiedUrls
+        .filter(_.urlType == "video")
+        .sortBy(_.quality)
+        .headOption
+        .map(_.url)
+
+      val bestAudio = classifiedUrls
+        .find(_.urlType == "audio")
+        .map(_.url)
+
+      (bestVideo, bestAudio) match
+        case (Some(video), Some(audio)) =>
+          logger.info(s"\nSelected video: $video\nSelected audio: $audio")
+          Some(ExtractorPayload(Seq(video, audio), Extension.DUAL_TRACK_MP4))
+        case _ =>
+          logger.warn("No valid video or audio streams found.")
+          None
+
+  override def extract(url: URL): Result[Option[ExtractorPayload]] =
+    logger.info(s"Starting extraction for URL: $url")
+    openPage(url, customCookies)(mainFn, preConfigureFn)
 
   /**
    * Extracts and classifies media URLs based on metadata.
@@ -76,49 +118,4 @@ class SeleniumInstagramMp4Extractor(val customCookies: Seq[CustomCookie])
     }
   }
 
-  val preConfigureFn: ChromeDriver => CopyOnWriteArrayList[String] = driver =>
-    SeleniumUtil.runUrlsListenerScanner(url => {
-      url.contains(".mp4") && url.contains("bytestart") && url.contains("byteend")
-    })(driver)
-
-  val mainFn: (ChromeDriver, CopyOnWriteArrayList[String]) => Option[ExtractorPayload] = (driver, segmentedUrls) =>
-
-    if segmentedUrls.isEmpty then
-      logger.info("No segmented .mp4 links found.")
-      None
-    else
-      logger.info(s"Segmented URLs received: ${segmentedUrls.size}")
-
-      val uniqueUrls = segmentedUrls.asScala
-        .map(urlStr => Url.parse(urlStr).removeParams("bytestart", "byteend").toJavaURI.toURL)
-        .distinct
-        .toSeq
-
-      logger.info(s"Unique URLs after cleaning: ${uniqueUrls.size}")
-
-
-      val classifiedUrls = uniqueUrls.flatMap(classifyUrlByEfg)
-
-      logger.info(s"Classified URLs: ${classifiedUrls.size}")
-
-      val bestVideo = classifiedUrls
-        .filter(_.urlType == "video")
-        .sortBy(_.quality)
-        .headOption
-        .map(_.url)
-
-      val bestAudio = classifiedUrls
-        .find(_.urlType == "audio")
-        .map(_.url)
-
-      (bestVideo, bestAudio) match
-        case (Some(video), Some(audio)) =>
-          logger.info(s"\nSelected video: $video\nSelected audio: $audio")
-          Some(ExtractorPayload(Seq(video, audio), Extension.DUAL_TRACK_MP4))
-        case _ =>
-          logger.warn("No valid video or audio streams found.")
-          None
-
-  override def extract(url: URL): Result[Option[ExtractorPayload]] =
-    logger.info(s"Starting extraction for URL: $url")
-    openPage(url, customCookies)(mainFn, preConfigureFn)
+  private case class ClassifiedUrl(urlType: String, url: URL, quality: Int)

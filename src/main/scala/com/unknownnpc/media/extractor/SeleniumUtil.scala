@@ -6,7 +6,6 @@ import org.openqa.selenium.devtools.v131.network.Network
 import org.openqa.selenium.devtools.v131.network.model.RequestWillBeSent
 import org.openqa.selenium.{By, JavascriptExecutor, WebElement}
 
-import java.net.URL
 import java.util.Optional
 import java.util.concurrent.CopyOnWriteArrayList
 import scala.annotation.tailrec

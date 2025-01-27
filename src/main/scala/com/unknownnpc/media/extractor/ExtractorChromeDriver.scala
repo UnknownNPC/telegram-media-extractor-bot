@@ -1,8 +1,8 @@
 package com.unknownnpc.media.extractor
 
 import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
-import scala.jdk.CollectionConverters.*
 
+import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
 private[extractor] object ExtractorChromeDriver:
